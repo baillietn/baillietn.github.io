@@ -1,0 +1,1451 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicolas Bailliet | LLM / Deep Learning — model training & inference</title>
+    <meta name="description"
+        content="Nicolas Bailliet — LLM Engineer & CS student at ENSEEIHT. Built HilbertLM from scratch (135M & 163M params, 20B tokens). Seeking 6-month internship from July 2026.">
+    <meta property="og:title" content="Nicolas Bailliet | LLM Engineer">
+    <meta property="og:description"
+        content="Built HilbertLM from scratch: 135M & 163M params, 20B tokens, Flash Attention 3 & FP8. Seeking internship in LLM development from July 2026.">
+    <meta property="og:url" content="https://baillietn.github.io">
+    <meta property="og:type" content="website">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap');
+
+        :root {
+            color-scheme: light dark;
+            --bg: #f7f4ef;
+            --bg-soft: #efe6d9;
+            --ink: #1f1c1a;
+            --ink-soft: #4f4a44;
+            --brand: #005f73;
+            --brand-2: #ca6702;
+            --card: #fffdf9;
+            --line: #d8cfc2;
+            --nav-bg: rgba(253, 251, 247, 0.82);
+            --shadow: 0 10px 40px rgba(31, 28, 26, 0.08);
+            --radius: 18px;
+            --radius-sm: 12px;
+            --max: 1100px;
+            --nav-height: 72px;
+            --bg-pattern:
+                radial-gradient(circle at 10% 15%, rgba(202, 103, 2, 0.18), transparent 35%),
+                radial-gradient(circle at 90% 5%, rgba(0, 95, 115, 0.14), transparent 28%),
+                repeating-linear-gradient(0deg, rgba(0, 95, 115, 0.04) 0 1px, transparent 1px 36px),
+                repeating-linear-gradient(90deg, rgba(31, 28, 26, 0.035) 0 1px, transparent 1px 36px),
+                linear-gradient(180deg, #fdfbf7 0%, var(--bg) 60%, #f1ece3 100%);
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #0d1318;
+            --bg-soft: #17212a;
+            --ink: #ebf2f7;
+            --ink-soft: #b4c3cf;
+            --brand: #43a5bf;
+            --brand-2: #f39f47;
+            --card: #121b23;
+            --line: #2b3b49;
+            --nav-bg: rgba(13, 19, 24, 0.84);
+            --shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+            --bg-pattern:
+                radial-gradient(circle at 15% 10%, rgba(67, 165, 191, 0.22), transparent 34%),
+                radial-gradient(circle at 92% 0%, rgba(243, 159, 71, 0.16), transparent 30%),
+                repeating-linear-gradient(0deg, rgba(67, 165, 191, 0.09) 0 1px, transparent 1px 34px),
+                repeating-linear-gradient(90deg, rgba(235, 242, 247, 0.05) 0 1px, transparent 1px 34px),
+                linear-gradient(180deg, #0a0f14 0%, var(--bg) 58%, #111a22 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--ink);
+            background: var(--bg-pattern);
+            line-height: 1.6;
+            transition: background-color 220ms ease, color 220ms ease;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(100% - 2.5rem, var(--max));
+            margin: 0 auto;
+        }
+
+        /* ── NAV ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(8px);
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--line);
+            transition: background-color 220ms ease, border-color 220ms ease;
+        }
+
+        .nav {
+            min-height: var(--nav-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-dot {
+            width: 0.65rem;
+            height: 0.65rem;
+            border-radius: 50%;
+            background: linear-gradient(130deg, var(--brand), var(--brand-2));
+            box-shadow: 0 0 0 6px rgba(0, 95, 115, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+        }
+
+        nav a {
+            padding: 0.45rem 0.75rem;
+            border-radius: 999px;
+            transition: background-color 220ms ease, color 220ms ease;
+        }
+
+        nav a:hover {
+            background: var(--bg-soft);
+            color: var(--ink);
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.45rem 0.5rem !important;
+            color: var(--ink-soft);
+            transition: color 220ms ease;
+        }
+
+        .github-link:hover {
+            color: var(--brand);
+            background: transparent !important;
+        }
+
+        .github-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.4rem 0.65rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--ink-soft);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: background-color 220ms ease, border-color 220ms ease;
+            white-space: nowrap;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-soft);
+            color: var(--ink);
+        }
+
+        .theme-toggle .icon-sun {
+            display: none;
+        }
+
+        .theme-toggle .icon-moon {
+            display: inline;
+        }
+
+        :root[data-theme="dark"] .theme-toggle .icon-sun {
+            display: inline;
+        }
+
+        :root[data-theme="dark"] .theme-toggle .icon-moon {
+            display: none;
+        }
+
+        /* ── MAIN ── */
+        main {
+            padding-bottom: 3.5rem;
+        }
+
+        section {
+            scroll-margin-top: calc(var(--nav-height) + 18px);
+            margin-top: 2.6rem;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: calc(78vh - var(--nav-height));
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            gap: 2rem;
+            padding: 1.7rem 0 0.5rem;
+        }
+
+        .kicker {
+            text-transform: uppercase;
+            letter-spacing: 0.11em;
+            font-size: 0.74rem;
+            color: var(--brand);
+            font-weight: 700;
+        }
+
+        h1,
+        h2,
+        h3 {
+            line-height: 1.1;
+            letter-spacing: -0.01em;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2.15rem, 4.8vw, 4rem);
+            margin: 0.7rem 0 1rem;
+            max-width: 16ch;
+        }
+
+        .hero p {
+            max-width: 58ch;
+            color: var(--ink-soft);
+            font-size: 1.03rem;
+        }
+
+        /* Availability badge hero */
+        .hero-avail {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(29, 184, 122, 0.12);
+            border: 1px solid rgba(29, 184, 122, 0.35);
+            border-radius: 999px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #0e7c4a;
+            margin-bottom: 0.6rem;
+        }
+
+        :root[data-theme="dark"] .hero-avail {
+            color: #4fffb0;
+            background: rgba(79, 255, 176, 0.1);
+            border-color: rgba(79, 255, 176, 0.3);
+        }
+
+        .hero-avail-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #1db87a;
+            box-shadow: 0 0 0 3px rgba(29, 184, 122, 0.2);
+            flex-shrink: 0;
+        }
+
+        .hero-actions {
+            margin-top: 1.55rem;
+            display: flex;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.8rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(140deg, var(--brand), #0a8aa3);
+            color: #fff;
+            box-shadow: 0 10px 26px rgba(0, 95, 115, 0.26);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(0, 95, 115, 0.32);
+        }
+
+        .btn-outline {
+            border-color: var(--line);
+            background: var(--card);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-soft);
+            transform: translateY(-2px);
+        }
+
+        .hero-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: var(--shadow);
+            transform: rotate(-1.5deg);
+            max-width: 370px;
+            justify-self: center;
+        }
+
+        .profile {
+            height: 240px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(rgba(31, 28, 26, 0.08), rgba(31, 28, 26, 0.08)),
+                url('figures/Nicolas.jpg') center / cover no-repeat;
+            border: 1px solid var(--line);
+        }
+
+        .hero-card-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.85rem;
+        }
+
+        .hero-stat {
+            background: var(--bg-soft);
+            border-radius: 10px;
+            padding: 0.5rem 0.6rem;
+            text-align: center;
+        }
+
+        .hero-stat-val {
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            color: var(--brand);
+            line-height: 1;
+        }
+
+        .hero-stat-lbl {
+            font-size: 0.72rem;
+            color: var(--ink-soft);
+            margin-top: 0.15rem;
+        }
+
+        .hero-card-note {
+            margin-top: 0.75rem;
+            color: var(--ink-soft);
+            font-size: 0.88rem;
+        }
+
+        /* ── SECTIONS ── */
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.5rem, 3.2vw, 2.15rem);
+            margin-bottom: 0.3rem;
+        }
+
+        .section-sub {
+            color: var(--ink-soft);
+            margin-bottom: 1.2rem;
+        }
+
+        .about-grid,
+        .skills-grid,
+        .contact-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .about-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 1.1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            margin-bottom: 0.6rem;
+            font-size: 1.12rem;
+        }
+
+        .card p,
+        .card li {
+            color: var(--ink-soft);
+            font-size: 0.96rem;
+        }
+
+        .timeline {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .timeline li {
+            padding-left: 0.95rem;
+            border-left: 2px solid var(--line);
+        }
+
+        .timeline-impact {
+            display: inline-block;
+            background: rgba(0, 95, 115, 0.1);
+            color: var(--brand);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.12rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+        }
+
+        /* ── PROJECTS ── */
+        .projects-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .projects-grid {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .project-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #e8f4f6;
+            color: #0b5f71;
+            border: 1px solid #b8dde4;
+            padding: 0.28rem 0.62rem;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        :root[data-theme="dark"] .project-badge {
+            background: rgba(31, 205, 255, 0.12);
+            color: #1fcdff;
+            border-color: rgba(31, 205, 255, 0.35);
+        }
+
+        .project {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--card);
+            transition: transform 240ms ease, box-shadow 240ms ease;
+            box-shadow: var(--shadow);
+        }
+
+        .project-card-link {
+            display: block;
+        }
+
+        .project-featured {
+            border-width: 2px;
+            border-color: rgba(0, 95, 115, 0.3);
+        }
+
+        .hilbert-project-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            border-radius: var(--radius-sm);
+            transition: transform 240ms ease, box-shadow 240ms ease;
+        }
+
+        .hilbert-project-link:hover .project {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 26px rgba(31, 28, 26, 0.14);
+        }
+
+        .project:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 26px rgba(31, 28, 26, 0.14);
+        }
+
+        .project-card-link:focus-visible {
+            outline: 3px solid var(--brand);
+            outline-offset: 3px;
+        }
+
+        .project-cover-hilbert {
+            height: 220px;
+            background: url('figures/poster_hilbert.png') center / cover no-repeat;
+        }
+
+        .project-content {
+            padding: 1rem;
+        }
+
+        .project-content h1 {
+            font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+            margin: 0 0 0.2rem;
+            max-width: none;
+        }
+
+        .project-content h3 {
+            margin-bottom: 0.35rem;
+            font-size: 1.05rem;
+        }
+
+        /* Metric chips in project */
+        .proj-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.5rem 0;
+        }
+
+        .proj-chip {
+            background: rgba(0, 95, 115, 0.09);
+            border: 1px solid rgba(0, 95, 115, 0.2);
+            color: var(--brand);
+            border-radius: 5px;
+            padding: 0.18rem 0.55rem;
+            font-size: 0.74rem;
+            font-weight: 700;
+        }
+
+        .project-cta {
+            margin-top: 0.8rem;
+            font-weight: 700;
+            color: var(--brand);
+            font-size: 0.9rem;
+        }
+
+        /* stages-table kept for use inside proj-detail-card */
+
+        .arch-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 0.4rem;
+        }
+
+        .arch-table td {
+            padding: 0.3rem 0.4rem;
+            border-bottom: 1px solid var(--line);
+            color: var(--ink-soft);
+        }
+
+        .arch-table td:first-child {
+            font-weight: 700;
+            color: var(--ink);
+            width: 45%;
+        }
+
+        .arch-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Training curve mini */
+        .mini-curve {
+            width: 100%;
+            height: 80px;
+            margin: 0.6rem 0;
+        }
+
+        /* Stages table */
+        .stages-wrap {
+            overflow-x: auto;
+            margin-top: 0.6rem;
+        }
+
+        .stages-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .stages-table th {
+            background: var(--bg-soft);
+            padding: 0.35rem 0.5rem;
+            text-align: left;
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .stages-table td {
+            padding: 0.3rem 0.5rem;
+            border-bottom: 1px solid var(--line);
+            color: var(--ink-soft);
+        }
+
+        .stages-table td:first-child {
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .stages-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Sidebar repos */
+        .repo-stack {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .repo-stack h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .repo-stack p {
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+        }
+
+        .repo-list {
+            list-style: none;
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 0.7rem;
+        }
+
+        .repo-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            padding: 0.6rem 0.7rem;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--bg-soft);
+            transition: transform 220ms ease, border-color 220ms ease;
+        }
+
+        .repo-item:hover {
+            transform: translateX(2px);
+            border-color: var(--brand);
+        }
+
+        .repo-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .repo-meta {
+            font-size: 0.8rem;
+            color: var(--ink-soft);
+        }
+
+        .tags {
+            margin-top: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .tag {
+            background: var(--bg-soft);
+            border: 1px solid var(--line);
+            color: var(--ink-soft);
+            border-radius: 999px;
+            padding: 0.2rem 0.55rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        /* ── SKILLS ── */
+        .skills-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .skill-list {
+            list-style: none;
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .skill-list li {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--card);
+            padding: 0.55rem 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .skill-level {
+            color: var(--brand);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* ── CONTACT ── */
+        .contact-grid {
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 2.2rem;
+        }
+
+        .contact-list {
+            list-style: none;
+            display: grid;
+            gap: 0.7rem;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 1.35rem 0 2rem;
+            color: var(--ink-soft);
+            font-size: 0.9rem;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.2rem;
+            font-size: 0.88rem;
+        }
+
+        .footer-links a {
+            color: var(--ink-soft);
+            transition: color 220ms ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--brand);
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            animation: fadeUp 680ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .d1 {
+            animation-delay: 120ms;
+        }
+
+        .d2 {
+            animation-delay: 240ms;
+        }
+
+        .d3 {
+            animation-delay: 360ms;
+        }
+
+        .d4 {
+            animation-delay: 480ms;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        /* ── proj-detail-grid : sub-grid inside a featured project ── */
+        .proj-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin: 0.85rem 0;
+        }
+
+        .proj-detail-card {
+            background: var(--bg-soft);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 0.85rem;
+        }
+
+        .proj-detail-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+
+        /* ── right-col: wraps repo-stack + hf-hub-section in the right grid column ── */
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-self: start;
+        }
+
+        /* ── HuggingFace Hub standalone section (inside right-col) ── */
+        .hf-hub-section {
+            margin-top: 0;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .hf-hub-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .hf-hub-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .hf-hub-title {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .hf-hub-sub {
+            font-size: 0.84rem;
+            color: var(--ink-soft);
+            margin-top: 0.1rem;
+        }
+
+        .hf-hub-cta {
+            margin-left: auto;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--brand);
+            white-space: nowrap;
+            transition: opacity 200ms ease;
+        }
+
+        .hf-hub-cta:hover {
+            opacity: 0.75;
+        }
+
+        .hf-model-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.55rem;
+        }
+
+        .hf-model-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.55rem 0.75rem;
+            background: var(--bg-soft);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            transition: border-color 200ms ease;
+        }
+
+        .hf-model-item:hover {
+            border-color: var(--brand);
+        }
+
+        .hf-model-name {
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--ink);
+            width: 100%;
+        }
+
+        .hf-model-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.12rem 0.45rem;
+            border-radius: 4px;
+            background: var(--line);
+            color: var(--ink-soft);
+        }
+
+        .hf-tag-base {
+            background: rgba(0, 95, 115, 0.12);
+            color: var(--brand);
+        }
+
+        .hf-tag-chat {
+            background: rgba(202, 103, 2, 0.12);
+            color: var(--brand-2);
+        }
+
+        .hf-tag-fp8 {
+            background: rgba(100, 50, 200, 0.1);
+            color: #6432c8;
+        }
+
+        :root[data-theme="dark"] .hf-tag-fp8 {
+            color: #b49cf9;
+            background: rgba(180, 156, 249, 0.12);
+        }
+
+        .hf-model-desc {
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+            width: 100%;
+            margin-top: 0.1rem;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 960px) {
+
+            .hero,
+            .projects-layout,
+            .about-grid,
+            .skills-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                min-height: auto;
+                padding-top: 2rem;
+            }
+
+            .hero-card {
+                transform: none;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .proj-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .right-col {
+                flex-direction: column;
+            }
+
+            .hf-hub-cta {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                width: min(100% - 1.4rem, var(--max));
+            }
+
+            .nav {
+                flex-wrap: wrap;
+                padding: 0.7rem 0;
+            }
+
+            nav ul {
+                width: 100%;
+                justify-content: space-between;
+                gap: 0.35rem;
+                font-size: 0.87rem;
+            }
+
+            .theme-toggle span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <a href="#top" class="brand">
+                <span class="brand-dot" aria-hidden="true"></span>
+                <span>Nicolas Bailliet</span>
+            </a>
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="cv/index.html">CV</a></li>
+                    <li>
+                        <a href="https://github.com/baillietn" target="_blank" rel="noopener noreferrer" title="GitHub"
+                            class="github-link">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path
+                                    d="M12 0C5.37 0 0 5.37 0 12c0 5.302 3.438 9.8 8.207 11.387.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3.405.27c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z" />
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode">
+                            <span class="icon-moon">🌙</span>
+                            <span class="icon-sun">☀️</span>
+                            <span>Theme</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="top" class="container">
+
+        <section class="hero">
+            <div>
+                <div class="hero-avail reveal">
+                    <span class="hero-avail-dot"></span>
+                    Open to internship · July 2026 · Paris / Remote
+                </div>
+                <p class="kicker reveal d1">LLM Engineer — training · architecture · inference</p>
+                <h1 class="reveal d2">Building language models from the ground up.</h1>
+                <p class="reveal d2">
+                    Computer Science student at ENSEEIHT specializing in HPC and Big Data with an interest in end-to-end
+                    LLM systems.
+                    Recent work: <strong>HilbertLM</strong> — two transformers (135M &amp; 163M params)
+                    trained from scratch on 20B tokens of a mixtures of datasets with Flash Attention 3 &amp; FP8
+                    quantization,
+                    deployed on HuggingFace Hub with a live chatbot interface.
+                </p>
+                <div class="hero-actions reveal d3">
+                    <a class="btn btn-primary" href="#projects">View my projects</a>
+                    <a class="btn btn-primary" href="https://huggingface.co/collections/baillietn/hilbertlm"
+                        target="_blank" rel="noopener">🤗 HuggingFace</a>
+                    <a class="btn btn-primary" href="cv/index.html">📄 CV</a>
+                </div>
+            </div>
+            <aside class="hero-card reveal d2" aria-label="Quick profile overview">
+                <div class="profile" role="img" aria-label="Portrait of Nicolas"></div>
+                <div class="hero-card-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">20B</div>
+                        <div class="hero-stat-lbl">tokens trained</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">~70h</div>
+                        <div class="hero-stat-lbl">single RTX 5080</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">4</div>
+                        <div class="hero-stat-lbl">models on HF Hub</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">79K</div>
+                        <div class="hero-stat-lbl">tok/s throughput</div>
+                    </div>
+                </div>
+                <p class="hero-card-note">
+                    <strong>Focus:</strong> LLM training · fine-tuning · inference optimization
+                </p>
+            </aside>
+        </section>
+
+        <section id="about">
+            <h2 class="section-title">About</h2>
+            <p class="section-sub">LLM engineer specializing in model training, architecture design, and numerical
+                optimization.</p>
+            <div class="about-grid">
+                <article class="card">
+                    <h3>Profile</h3>
+                    <p>
+                        Third-year CS student at ENSEEIHT with a strong background in mathematics and optimization.
+                        Built and deployed <strong>HilbertLM</strong> — two transformer LLMs (135M &amp; 163M params)
+                        trained entirely from scratch on 20B tokens with Flash Attention 3 &amp; FP8 quantization
+                        on a single GPU in ~70 hours. Full pipeline from custom tokenizer to HuggingFace deployment.
+                    </p>
+                    <p style="margin-top:0.6rem;">
+                        Seeking a <strong>5-month internship from July 2026</strong> in LLM training, architecture, or
+                        inference optimization.
+                    </p>
+                </article>
+                <article class="card">
+                    <h3>Education &amp; Experience</h3>
+                    <ul class="timeline">
+                        <li>
+                            <strong>Computer Science &amp; Engineering</strong> — ENSEEIHT (2023–Present)<br>
+                            <span style="font-size:0.9rem;">ML algorithms, numerical methods, optimization, HPC, big
+                                data systems.</span>
+                        </li>
+                        <li>
+                            <strong>Research Engineer Intern — Optimal Control</strong> — IRIT/ENSEEIHT (2025)<br>
+                            <span style="font-size:0.9rem;">Validated an open-source Julia optimal-control solver —
+                                benchmarked 15 problems against JuMP (convergence, initialization &amp; relative
+                                L<sup>p</sup>-norm error on state/control, p=2), plus unit tests &amp; docs on
+                                GitHub.</span>
+                            <span class="timeline-impact">15 benchmarks vs JuMP</span>
+                        </li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2 class="section-title">Projects</h2>
+            <p class="section-sub">Featured projects and complementary GitHub repositories.</p>
+
+            <div class="projects-layout">
+
+                <div class="projects-grid">
+                    <span class="project-badge">★ Featured Project</span>
+
+                    <a href="https://baillietn.github.io/HilbertLM-Lab/" target="_blank" rel="noopener noreferrer"
+                        aria-label="Open HilbertLM Lab project" class="hilbert-project-link">
+                        <div class="project project-featured">
+
+                            <div class="project-cover-hilbert" aria-hidden="true"></div>
+
+                            <div class="project-content">
+                                <h1>HilbertLM</h1>
+                                <h3>Two language models trained from scratch · 135M &amp; 163M params</h3>
+
+                                <div class="proj-metrics">
+                                    <span class="proj-chip">20B tokens</span>
+                                    <span class="proj-chip">~70h · RTX 5080</span>
+                                    <span class="proj-chip">79K tok/s</span>
+                                    <span class="proj-chip">4 models on HF Hub</span>
+                                    <span class="proj-chip">Flash Attention 3</span>
+                                    <span class="proj-chip">FP8 quantization</span>
+                                </div>
+
+                                <div class="proj-metrics">
+                                    <div class="proj-detail-card">
+                                        <div class="proj-detail-title">Architecture &amp; efficiency</div>
+                                        <table class="arch-table">
+                                            <tr>
+                                                <td>Parameters</td>
+                                                <td>135M (BF16) · 163M (FP8)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Layers · heads</td>
+                                                <td>30 · 9Q / 3KV (GQA)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Hidden dim · context</td>
+                                                <td>576 · 2048 tokens</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Vocabulary</td>
+                                                <td>49,152 (custom BPE)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Throughput</td>
+                                                <td>~79K tok/s · 11GB VRAM</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Effective batch</td>
+                                                <td>524,288 tokens (64 accum)</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="proj-detail-card">
+                                        <div class="proj-detail-title">4-stage curriculum · 20B tokens</div>
+                                        <div class="stages-wrap">
+                                            <table class="stages-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Stage</th>
+                                                        <th>Tokens</th>
+                                                        <th>Web</th>
+                                                        <th>Code</th>
+                                                        <th>Know.</th>
+                                                        <th>Math</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>8B</td>
+                                                        <td>85%</td>
+                                                        <td>15%</td>
+                                                        <td>—</td>
+                                                        <td>—</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>2</td>
+                                                        <td>6B</td>
+                                                        <td>70%</td>
+                                                        <td>20%</td>
+                                                        <td>10%</td>
+                                                        <td>—</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>3</td>
+                                                        <td>4B</td>
+                                                        <td>55%</td>
+                                                        <td>20%</td>
+                                                        <td>10%</td>
+                                                        <td>15%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>4</td>
+                                                        <td>2B</td>
+                                                        <td>35%</td>
+                                                        <td>20%</td>
+                                                        <td>25%</td>
+                                                        <td>20%</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p style="font-size:0.8rem;color:var(--ink-soft);margin-top:0.4rem;">
+                                            + 100M SFT (SmolTalk) — chat loss ≈ 2.3<br>
+                                            AdamW β₁=0.9 β₂=0.999 λ=0.1 · LR 3e-3 cosine
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div class="tags">
+                                    <span class="tag">Python</span>
+                                    <span class="tag">PyTorch</span>
+                                    <span class="tag">Transformer Engine</span>
+                                    <span class="tag">Flash Attention 3</span>
+                                    <span class="tag">FP8</span>
+                                    <span class="tag">HuggingFace</span>
+                                    <span class="tag">BPE tokenizer</span>
+                                </div>
+
+                                <div
+                                    style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.8rem;align-items:center;">
+                                    <a href="https://baillietn.github.io/HilbertLM-Lab/" target="_blank"
+                                        rel="noopener noreferrer" class="project-cta">→ Full project page &amp; live
+                                        demo</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+
+                <div class="right-col">
+                    <aside class="repo-stack" aria-label="Other GitHub projects">
+                        <h3>Other GitHub Projects</h3>
+                        <p>Complementary work in deep learning, numerical methods, and data science.</p>
+                        <ul class="repo-list">
+                            <li>
+                                <a class="repo-item"
+                                    href="https://github.com/baillietn/soprasteria-water-quality-project"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <span class="repo-name">Soprasteria Water Quality — IBD Prediction</span>
+                                    <span class="repo-meta">Python · TensorFlow/Keras · Ecological Modeling · 70+
+                                        features</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="repo-item" href="https://github.com/baillietn/Deep-Learning-Practical-Modules"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <span class="repo-name">ENM–ENSEEIHT — Deep Learning Modules</span>
+                                    <span class="repo-meta">Python · PyTorch · CNNs, Transformers, GANs, RankNet — 8
+                                        modules</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="repo-item" href="https://github.com/baillietn/Optimal_Control" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <span class="repo-name">Optimal Control &amp; Orbital Mechanics</span>
+                                    <span class="repo-meta">Julia · Numerical Optimization · Aerospace dynamics</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="repo-item" href="https://github.com/baillietn/stochastic-filtering"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <span class="repo-name">Stochastic Filtering &amp; Data Assimilation</span>
+                                    <span class="repo-meta">Python · JAX · Kalman Filters, Score-based diffusion
+                                        models</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </aside>
+
+                    <aside class="hf-hub-section" aria-label="HuggingFace Hub models">
+                        <div class="hf-hub-header">
+                            <span class="hf-hub-icon">🤗</span>
+                            <div>
+                                <div class="hf-hub-title">HuggingFace Hub</div>
+                                <div class="hf-hub-sub">All publicly released models · more fine-tuned variants coming
+                                    soon</div>
+                            </div>
+                            <a href="https://huggingface.co/collections/baillietn/hilbertlm" target="_blank"
+                                rel="noopener" class="hf-hub-cta">View full collection ↗</a>
+                        </div>
+                        <ul class="hf-model-list">
+                            <li class="hf-model-item">
+                                <span class="hf-model-name">baillietn/Hilbert-135M-Base</span>
+                                <span class="hf-model-tag">BF16</span>
+                                <span class="hf-model-tag hf-tag-base">Base</span>
+                                <span class="hf-model-desc">Pre-trained base model · 135M params · 20B tokens</span>
+                            </li>
+                            <li class="hf-model-item">
+                                <span class="hf-model-name">baillietn/Hilbert-135M-Chat</span>
+                                <span class="hf-model-tag">BF16</span>
+                                <span class="hf-model-tag hf-tag-chat">Chat · SFT</span>
+                                <span class="hf-model-desc">Instruction-tuned on 100M tokens · ChatML format</span>
+                            </li>
+                            <li class="hf-model-item">
+                                <span class="hf-model-name">baillietn/Hilbert-163M-Base-FP8</span>
+                                <span class="hf-model-tag hf-tag-fp8">FP8</span>
+                                <span class="hf-model-tag hf-tag-base">Base</span>
+                                <span class="hf-model-desc">163M params · trained with FP8 quantization (NVIDIA
+                                    Ada/Hopper)</span>
+                            </li>
+                            <li class="hf-model-item">
+                                <span class="hf-model-name">baillietn/Hilbert-163M-Chat-FP8</span>
+                                <span class="hf-model-tag hf-tag-fp8">FP8</span>
+                                <span class="hf-model-tag hf-tag-chat">Chat · SFT</span>
+                                <span class="hf-model-desc">FP8 base + instruction fine-tuning · ChatML format</span>
+                            </li>
+                        </ul>
+                    </aside>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section id="skills">
+            <h2 class="section-title">Skills</h2>
+            <p class="section-sub">Technical expertise in LLM development, deep learning, and numerical computing.</p>
+            <div class="skills-grid">
+                <article class="card">
+                    <h3>Machine Learning &amp; LLMs</h3>
+                    <ul class="skill-list">
+                        <li><span>LLM architecture (GQA · RoPE · SwiGLU)</span><span
+                                class="skill-level">Proficient</span></li>
+                        <li><span>Pre-training pipeline (data · curriculum · BPE)</span><span
+                                class="skill-level">Proficient</span></li>
+                        <li><span>Fine-tuning (SFT)</span><span class="skill-level">Proficient</span></li>
+                        <li><span>Mixed-precision training (BF16/FP8)</span><span
+                                class="skill-level">Intermediate</span></li>
+                        <li><span>Inference &amp; deployment (HF)</span><span class="skill-level">Intermediate</span>
+                        </li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Numerical &amp; Tools</h3>
+                    <ul class="skill-list">
+                        <li><span>Numerical optimization (constrained)</span><span class="skill-level">Advanced</span>
+                        </li>
+                        <li><span>Optimal control · ODE solvers</span><span class="skill-level">Proficient</span></li>
+                        <li><span>Python · PyTorch · HuggingFace</span><span class="skill-level">Advanced</span></li>
+                        <li><span>Julia</span><span
+                                class="skill-level">Intermediate</span></li>
+                        <li><span>Linux · Git</span><span class="skill-level">Intermediate</span></li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2 class="section-title">Contact</h2>
+            <p class="section-sub">Reach out for internships, collaborations, or discussions on LLM development.</p>
+            <div class="contact-grid">
+                <article class="card">
+                    <h3>Connect</h3>
+                    <ul class="contact-list">
+                        <li><strong>Email:</strong> <a href="mailto:nicolas.bailliet@etu.toulouse-inp.fr"
+                                style="color:var(--brand);">nicolas.bailliet@etu.toulouse-inp.fr</a></li>
+                        <li><strong>Phone:</strong> +33 6 51 75 16 99</li>
+                        <li><strong>Location:</strong> Paris, France</li>
+                        <li><strong>GitHub:</strong> <a href="https://github.com/baillietn" target="_blank"
+                                style="color:var(--brand);">github.com/baillietn</a></li>
+                        <li><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/nbailliet" target="_blank"
+                                style="color:var(--brand);">linkedin.com/in/nbailliet</a></li>
+                        <li><strong>HuggingFace:</strong> <a href="https://huggingface.co/baillietn" target="_blank"
+                                style="color:var(--brand);">huggingface.co/baillietn</a></li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Let's Collaborate</h3>
+                    <p>
+                        Actively seeking a <strong>5-month internship from July 2026</strong> in LLM training,
+                        architecture research, or inference optimization. Also open to freelance missions and research
+                        collaborations in AI/ML.
+                    </p>
+                    <p style="margin-top:0.8rem;">
+                        <a class="btn btn-primary" href="mailto:nicolas.bailliet@etu.toulouse-inp.fr">Send an email</a>
+                    </p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <p>© 2025 Nicolas Bailliet · Paris, France</p>
+            <div class="footer-links">
+                <a href="https://github.com/baillietn" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://linkedin.com/in/nbailliet" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://huggingface.co/collections/baillietn/hilbertlm" target="_blank"
+                    rel="noopener">HuggingFace</a>
+                <a href="cv/index.html">CV</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            var root = document.documentElement;
+            var stored = localStorage.getItem('theme');
+            var media = window.matchMedia('(prefers-color-scheme: dark)');
+            function applyTheme(t) { root.setAttribute('data-theme', t); localStorage.setItem('theme', t); }
+            if (stored) { applyTheme(stored); } else { applyTheme(media.matches ? 'dark' : 'light'); }
+            media.addEventListener('change', function (e) { if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light'); });
+        })();
+
+        function toggleTheme() {
+            var root = document.documentElement;
+            var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+    </script>
+</body>
+
+</html>

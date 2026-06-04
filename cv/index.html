@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicolas Bailliet — CV | LLM / Deep Learning — model training & inference</title>
+    <style>
+        :root {
+            --cv-bg: #f0f0f0;
+            --cv-card-bg: white;
+            --cv-text: #1a1a1a;
+            --cv-text-soft: #3a3a3a;
+            --cv-sidebar-text: white;
+            --cv-sidebar-color: linear-gradient(135deg, #0f5f8f 0%, #00b4d8 100%);
+            --cv-header-border: #0f5f8f;
+            --cv-section-title: #0f5f8f;
+            --cv-date-color: #0a7fa3;
+            --cv-metric-bg: #eef5fb;
+            --cv-metric-border: #b8d4e8;
+            --cv-metric-text: #0a3f60;
+            --cv-avail-bg: #e8f6f0;
+            --cv-avail-border: #9de4c8;
+            --cv-avail-text: #0a6644;
+            --cv-skill-border: rgba(255, 255, 255, 0.08);
+            --cv-skill-name: rgba(255, 255, 255, 0.9);
+        }
+
+        :root[data-theme="dark"] {
+            --cv-bg: #0d1318;
+            --cv-card-bg: #121b23;
+            --cv-text: #ebf2f7;
+            --cv-text-soft: #b4c3cf;
+            --cv-sidebar-text: white;
+            --cv-sidebar-color: linear-gradient(135deg, #1a4f63 0%, #0081a8 100%);
+            --cv-header-border: #43a5bf;
+            --cv-section-title: #43a5bf;
+            --cv-date-color: #7dd3f5;
+            --cv-metric-bg: rgba(67, 165, 191, 0.15);
+            --cv-metric-border: rgba(67, 165, 191, 0.35);
+            --cv-metric-text: #7dd3f5;
+            --cv-avail-bg: rgba(29, 184, 122, 0.15);
+            --cv-avail-border: rgba(79, 255, 176, 0.35);
+            --cv-avail-text: #4fffb0;
+            --cv-skill-border: rgba(67, 165, 191, 0.12);
+            --cv-skill-name: #ebf2f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--cv-text);
+            background: var(--cv-bg);
+            line-height: 1.4;
+            transition: background-color 220ms ease, color 220ms ease;
+        }
+
+        body {
+            padding: 1rem;
+        }
+
+        .cv-container {
+            max-width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            background: var(--cv-card-bg);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+            display: grid;
+            grid-template-columns: 175px 1fr;
+            overflow: hidden;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            background: var(--cv-sidebar-color);
+            color: var(--cv-sidebar-text);
+            padding: 1.3rem 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            height: 100%;
+        }
+
+        .sidebar h3 {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            opacity: 0.75;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            padding-bottom: 0.2rem;
+        }
+
+        .profile-photo {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            margin: 0 auto 0.1rem;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Availability badge */
+        .avail-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 0.22rem 0.55rem;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin: 0 auto;
+        }
+
+        .avail-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4fffb0;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px rgba(79, 255, 176, 0.7);
+        }
+
+        /* Contact */
+        .contact-info {
+            font-size: 0.68rem;
+            line-height: 1.55;
+        }
+
+        .contact-info p {
+            word-break: break-word;
+            margin: 0.28rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.35rem;
+        }
+
+        .contact-icon {
+            display: inline-flex;
+            width: 0.9rem;
+            height: 0.9rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .contact-icon.phone {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M19.95 21c-1.05 0-4.08-1.5-7.85-5.27-3.77-3.77-5.27-6.8-5.27-7.85 0-.54.22-1.04.58-1.4l2.2-2.2c.28-.28.36-.72.2-1.1L6.16 2.94c-.18-.46-.64-.76-1.12-.76-.88 0-1.6.72-1.6 1.6v2c0 6.63 5.37 12 12 12h2c.88 0 1.6-.72 1.6-1.6 0-.48-.3-.94-.76-1.12l-3.24-.62c-.38-.16-.82-.08-1.1.2l-2.2 2.2c-.36.36-.86.58-1.4.58z"/></svg>') no-repeat center / contain;
+        }
+
+        .contact-icon.email {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>') no-repeat center / contain;
+        }
+
+        .contact-icon.location {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>') no-repeat center / contain;
+        }
+
+        .contact-icon.github {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3.405.27c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57C20.565 21.795 24 17.31 24 12c0-6.63-5.37-12-12-12z"/></svg>') no-repeat center / contain;
+        }
+
+        .contact-icon.linkedin {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.39v-1.2h-2.5v8.5h2.5v-4.74c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.74h2.5M6.5 8a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3m1 10.5h-2V9.5h2v8.5z"/></svg>') no-repeat center / contain;
+        }
+
+        .contact-icon.portfolio {
+            background: url('data:image/svg+xml,<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white"><path d="M3 3h18v2H3V3zm0 4h18v12H3V7zm2 2v8h14V9H5z"/><path d="M7 11h4v6H7z" fill="rgba(255,255,255,0.3)"/></svg>') no-repeat center / contain;
+        }
+
+        .contact-icon.hf {
+            background: none;
+            font-size: 0.75rem;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-icon.hf::before {
+            content: "🤗";
+        }
+
+        /* Skills — unified section */
+        .skill-group-label {
+            font-size: 0.58rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            opacity: 0.6;
+            margin-top: 0.4rem;
+            margin-bottom: 0.15rem;
+            font-weight: 700;
+        }
+
+        .skill-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.3rem;
+            font-size: 0.65rem;
+            padding: 0.12rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .skill-row:last-child {
+            border-bottom: none;
+        }
+
+        .skill-name {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .skill-level {
+            font-weight: 700;
+            white-space: nowrap;
+            font-size: 0.6rem;
+        }
+
+        .sl-adv {
+            color: #7ff0c8;
+        }
+
+        .sl-prof {
+            color: #a8d8ff;
+        }
+
+        .sl-int {
+            color: #ffd080;
+        }
+
+        /* Tech badges row */
+        .tech-mini {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.22rem;
+            margin-top: 0.15rem;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.58rem;
+            font-weight: 600;
+        }
+
+        /* Languages */
+        .languages {
+            font-size: 0.66rem;
+            line-height: 1.7;
+        }
+
+        .languages strong {
+            font-weight: 700;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            padding: 1.3rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 2px solid var(--cv-header-border);
+            padding-bottom: 0.4rem;
+        }
+
+        .name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--cv-section-title);
+            letter-spacing: -0.01em;
+        }
+
+        .title-line {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--cv-date-color);
+            margin-top: 0.05rem;
+        }
+
+        .avail-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: var(--cv-avail-bg);
+            border: 1px solid var(--cv-avail-border);
+            border-radius: 20px;
+            padding: 0.18rem 0.6rem;
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: var(--cv-avail-text);
+            margin-top: 0.3rem;
+        }
+
+        .avail-inline-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #1db87a;
+            flex-shrink: 0;
+        }
+
+        /* Sections */
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .section-title {
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--cv-section-title);
+            border-bottom: 1px solid var(--cv-metric-border);
+            padding-bottom: 0.2rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .entry {
+            font-size: 0.7rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .entry-title {
+            font-weight: 700;
+            color: var(--cv-text);
+            font-size: 0.7rem;
+        }
+
+        .entry-date {
+            font-size: 0.6rem;
+            color: var(--cv-date-color);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .entry-sub {
+            font-size: 0.62rem;
+            color: var(--cv-text-soft);
+            margin-bottom: 0.1rem;
+        }
+
+        .entry-desc {
+            font-size: 0.66rem;
+            color: var(--cv-text-soft);
+            line-height: 1.4;
+        }
+
+        .entry-desc ul {
+            padding-left: 1rem;
+        }
+
+        .entry-desc li {
+            margin-bottom: 0.06rem;
+        }
+
+        /* Profile text */
+        .profile-text {
+            font-size: 0.68rem;
+            line-height: 1.5;
+            color: var(--cv-text-soft);
+        }
+
+        /* Projects */
+        .project-item {
+            margin-bottom: 0.35rem;
+        }
+
+        .project-name {
+            font-weight: 700;
+            color: var(--cv-section-title);
+            font-size: 0.69rem;
+        }
+
+        .project-header {
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-start;
+        }
+
+        .project-title {
+            font-weight: 700;
+            color: var(--cv-section-title);
+            font-size: 0.69rem;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .project-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.03rem;
+            align-items: flex-start;
+        }
+
+        .project-link-item {
+            display: flex;
+            gap: 0.15rem;
+            align-items: baseline;
+        }
+
+        .project-url {
+            font-size: 0.55rem;
+            color: var(--cv-text-soft);
+            opacity: 0.75;
+            font-weight: 400;
+        }
+
+        .project-metrics {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.08rem 0;
+        }
+
+        .metric-chip {
+            background: var(--cv-metric-bg);
+            border: 1px solid var(--cv-metric-border);
+            border-radius: 3px;
+            padding: 0.08rem 0.35rem;
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: var(--cv-metric-text);
+        }
+
+        .project-tech {
+            font-size: 0.6rem;
+            color: var(--cv-date-color);
+            font-weight: 600;
+            margin-bottom: 0.05rem;
+        }
+
+        .project-desc {
+            font-size: 0.64rem;
+            color: var(--cv-text-soft);
+            line-height: 1.35;
+        }
+
+        .project-link {
+            font-size: 0.6rem;
+            color: var(--cv-date-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .project-url {
+            font-size: 0.55rem;
+            color: var(--cv-text-soft);
+            opacity: 0.75;
+            font-weight: 400;
+        }
+
+        /* Print / buttons */
+        .btn-container {
+            position: fixed;
+            top: 1.2rem;
+            left: 1.2rem;
+            display: flex;
+            gap: 0.6rem;
+            z-index: 100;
+        }
+
+        .btn-container-right {
+            position: fixed;
+            top: 1.2rem;
+            right: 1.2rem;
+            display: flex;
+            gap: 0.6rem;
+            z-index: 100;
+        }
+
+        .cv-btn,
+        .download-btn {
+            background: var(--cv-section-title);
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(15, 95, 143, 0.3);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cv-btn:hover,
+        .download-btn:hover {
+            background: var(--cv-date-color);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle-cv {
+            background: var(--cv-section-title);
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(15, 95, 143, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .theme-toggle-cv:hover {
+            background: var(--cv-date-color);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle-cv .icon-moon {
+            display: inline;
+        }
+
+        .theme-toggle-cv .icon-sun {
+            display: none;
+        }
+
+        :root[data-theme="dark"] .theme-toggle-cv .icon-moon {
+            display: none;
+        }
+
+        :root[data-theme="dark"] .theme-toggle-cv .icon-sun {
+            display: inline;
+        }
+
+        @media print {
+            :root {
+                --cv-bg: #f0f0f0;
+                --cv-card-bg: white;
+                --cv-text: #1a1a1a;
+                --cv-text-soft: #3a3a3a;
+                --cv-sidebar-text: white;
+                --cv-sidebar-color: linear-gradient(135deg, #0f5f8f 0%, #00b4d8 100%);
+                --cv-header-border: #0f5f8f;
+                --cv-section-title: #0f5f8f;
+                --cv-date-color: #0a7fa3;
+                --cv-metric-bg: #eef5fb;
+                --cv-metric-border: #b8d4e8;
+                --cv-metric-text: #0a3f60;
+                --cv-skill-border: rgba(255, 255, 255, 0.08);
+                --cv-skill-name: rgba(255, 255, 255, 0.9);
+            }
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .cv-container {
+                max-width: 100%;
+                height: auto;
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .sidebar {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .main-content {
+                overflow: visible;
+            }
+
+            .btn-container,
+            .btn-container-right {
+                display: none;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="btn-container">
+        <a href="../index.html" class="cv-btn">← Portfolio</a>
+        <button class="theme-toggle-cv" onclick="toggleTheme()" aria-label="Toggle dark/light mode">
+            <span class="icon-moon">🌙</span>
+            <span class="icon-sun">☀️</span>
+        </button>
+    </div>
+
+    <div class="btn-container-right">
+        <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+    </div>
+
+    <div class="cv-container">
+        <div class="sidebar">
+            <div class="profile-photo">
+                <img src="../figures/Nicolas.jpg" alt="Nicolas Bailliet">
+            </div>
+
+            <div class="avail-badge">
+                <span class="avail-dot"></span>
+                Open to internship · July 2026
+            </div>
+
+            <div>
+                <h3>Contact</h3>
+                <div class="contact-info">
+                    <p><span class="contact-icon phone"></span>+33 6 51 75 16 99</p>
+                    <p><span class="contact-icon email"></span>
+                        <a href="mailto:nicolas.bailliet@etu.toulouse-inp.fr"
+                            style="color:white;text-decoration:none;">nicolas.bailliet@<br>etu.toulouse-inp.fr</a>
+                    </p>
+                    <p><span class="contact-icon location"></span>Paris, France</p>
+                    <p><span class="contact-icon github"></span>
+                        <a href="https://github.com/baillietn"
+                            style="color:white;text-decoration:none;">github.com/baillietn</a>
+                    </p>
+                    <p><span class="contact-icon linkedin"></span>
+                        <a href="https://linkedin.com/in/nbailliet"
+                            style="color:white;text-decoration:none;">linkedin.com/in/nbailliet</a>
+                    </p>
+                    <p><span class="contact-icon hf"></span>
+                        <a href="https://huggingface.co/baillietn"
+                            style="color:white;text-decoration:none;">hf.co/baillietn</a>
+                    </p>
+                    <p><span class="contact-icon portfolio"></span>
+                        <a href="https://baillietn.github.io"
+                            style="color:white;text-decoration:none;">baillietn.github.io</a>
+                    </p>
+                </div>
+            </div>
+
+            <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:0.7rem;">
+                <h3>Skills</h3>
+
+                <div class="skill-group-label">Machine Learning &amp; LLMs</div>
+                <div class="skill-row"><span class="skill-name">LLM architecture (GQA · RoPE · SwiGLU)</span><span
+                        class="skill-level sl-prof">Proficient</span></div>
+                <div class="skill-row"><span class="skill-name">Pre-training pipeline (data · curriculum ·
+                        BPE)</span><span class="skill-level sl-prof">Proficient</span></div>
+                <div class="skill-row"><span class="skill-name">Fine-tuning (SFT)</span><span
+                        class="skill-level sl-prof">Proficient</span></div>
+                <div class="skill-row"><span class="skill-name">Mixed-precision training (BF16/FP8)</span><span
+                        class="skill-level sl-int">Intermediate</span></div>
+                <div class="skill-row"><span class="skill-name">Inference &amp; deployment (HF)</span><span
+                        class="skill-level sl-int">Intermediate</span></div>
+
+                <div class="skill-group-label" style="margin-top:0.5rem;">Numerical &amp; Optimization</div>
+                <div class="skill-row"><span class="skill-name">Numerical optimization (constrained)</span><span
+                        class="skill-level sl-adv">Advanced</span></div>
+                <div class="skill-row"><span class="skill-name">Optimal control · ODE solvers (shooting ·
+                        MPC)</span><span class="skill-level sl-prof">Proficient</span></div>
+
+                <div class="skill-group-label" style="margin-top:0.5rem;">Frameworks &amp; Tools</div>
+                <div class="tech-mini">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">PyTorch</span>
+                    <span class="tech-badge">HuggingFace</span>
+                    <span class="tech-badge">Transformer Engine</span>
+                    <span class="tech-badge">Flash Attention</span>
+                    <span class="tech-badge">FP8 / BF16</span>
+                    <span class="tech-badge">JAX/Flax</span>
+                    <span class="tech-badge">NumPy</span>
+                    <span class="tech-badge">scikit-learn</span>
+                    <span class="tech-badge">Julia</span>
+                    <span class="tech-badge">SQL</span>
+                    <span class="tech-badge">Git</span>
+                    <span class="tech-badge">Linux</span>
+                    <span class="tech-badge">HPC</span>
+                </div>
+            </div>
+            <div>
+                <h3>Languages</h3>
+                <div class="languages">
+                    <strong>French:</strong> Native<br>
+                    <strong>English:</strong> Professional<br>
+                    <strong>Spanish:</strong> Basic
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+
+            <div class="header">
+                <div class="name">Nicolas Bailliet</div>
+                <div class="title-line">LLM / Deep Learning — model training, architecture &amp; inference optimization</div>
+                <div class="avail-inline">
+                    <span class="avail-inline-dot"></span>
+                    Seeking 5-month internship · From July 2026 · Paris / Remote
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Professional Profile</div>
+                <p class="profile-text">
+                    Third-year Computer Science student at ENSEEIHT with a strong background in mathematics and
+                    optimization.
+                    Built and deployed <strong>HilbertLM</strong> — two transformer LLMs (135M &amp; 163M params)
+                    trained entirely from scratch on 20B tokens using Flash Attention 3 &amp; FP8 quantization on a
+                    single RTX 5080 (~70h). Full pipeline: custom BPE tokenizer, 4-stage curriculum pre-training,
+                    SFT fine-tuning, and HuggingFace deployment with live chatbot.
+                    Seeking a role in <strong>LLM training, architecture, or inference optimization</strong>.
+                </p>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Professional Experience</div>
+
+                <div class="entry">
+                    <div class="entry-header">
+                        <div class="entry-title">Research Engineer Intern — Optimal Control &amp; Scientific Computing
+                        </div>
+                        <div class="entry-date">Jun-Aug 2025</div>
+                    </div>
+                    <div class="entry-sub">IRIT / ENSEEIHT · Toulouse</div>
+                    <div class="entry-desc">
+                        <ul>
+                            <li>Enhanced and validated an open-source Julia optimal-control solver library, across two
+                                axes: software maintenance (bug fixing) and numerical validation.</li>
+                            <li>Built an automated benchmark looping over 15 control problems: convergence checks for
+                                both the solver and JuMP (reference Julia modeling language), initialization comparison,
+                                and relative error in the L<sup>p</sup> norm — run at p=2 — on the state (x) and control
+                                (u) between the two solvers.</li>
+                            <li>Validated the Lunar Landing maneuver (minimum-fuel soft touchdown), reproducing known
+                                analytical solutions with high precision and confirming the fix of critical bugs.</li>
+                            <li>Investigated an Earth-to-Moon transfer modeled as the Restricted Three-Body Problem
+                                (CR3BP); implemented regularization to smooth singularities and scoped solver
+                                limitations for future work.</li>
+                            <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer
+                                reviews) — positive team feedback for surfacing critical bugs. Stack: Julia · JuMP.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Education</div>
+
+                <div class="entry">
+                    <div class="entry-header">
+                        <div class="entry-title">Computer Science &amp; Engineering — ENSEEIHT (INP Toulouse)</div>
+                        <div class="entry-date">2023–Present</div>
+                    </div>
+                    <div class="entry-desc">ML algorithms, numerical methods, optimization, HPC, big data systems.</div>
+                </div>
+
+                <div class="entry" style="margin-top:0.15rem;">
+                    <div class="entry-header">
+                        <div class="entry-title">Preparatory School, Maths &amp; Physics — Lycée Chaptal, Paris</div>
+                        <div class="entry-date">2020–2023</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Projects</div>
+
+                <div class="project-item">
+                    <div class="project-header">
+                        <div class="project-title">★ HilbertLM (135M &amp; 163M)</div>
+                        <div class="project-links">
+                            <div class="project-link-item">
+                                <a href="https://baillietn.github.io/HilbertLM-Lab/" class="project-link">Live demo
+                                    ↗</a>
+                                <span class="project-url">(baillietn.github.io/HilbertLM-Lab/)</span>
+                            </div>
+                            <div class="project-link-item">
+                                <a href="https://huggingface.co/collections/baillietn/hilbertlm"
+                                    class="project-link">HuggingFace ↗</a>
+                                <span class="project-url">(huggingface.co/collections/baillietn/hilbertlm)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-metrics">
+                        <span class="metric-chip">135M &amp; 163M params</span>
+                        <span class="metric-chip">20B tokens trained</span>
+                        <span class="metric-chip">~70h · RTX 5080</span>
+                        <span class="metric-chip">79K tok/s throughput</span>
+                        <span class="metric-chip">4 models on HF Hub</span>
+                    </div>
+                    <div class="project-tech">Python · PyTorch · Transformer Engine · Flash Attention 3 · FP8 ·
+                        HuggingFace · BPE</div>
+                    <div class="project-desc">
+                        Two decoder-only transformers built entirely from scratch. 30-layer architecture: GQA (9Q/3KV
+                        heads),
+                        RoPE, SwiGLU — custom BPE tokenizer (49K vocab). 4-stage curriculum pre-training (FineWeb-Edu,
+                        Python-Edu,
+                        FineMath, Cosmopedia-v2) + SFT on 100M conversational tokens (SmolTalk). Loss landscape
+                        visualization
+                        via PCA on checkpoints. Deployed as Base &amp; Chat variants (BF16 + FP8) on HuggingFace Hub
+                        with streaming chatbot interface.
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-name">Soprasteria–ENSEEIHT · Water Quality IBD Prediction</div>
+                    <div class="project-tech">Python · TensorFlow/Keras · scikit-learn · pandas</div>
+                    <div class="project-desc">
+                        Neural network predicting Biological Diatom Index for river ecosystem monitoring.
+                        70+ environmental features from Naïades DB (2000–2025); BatchNorm &amp; Dropout;
+                        anomaly detection &amp; feature importance analysis.
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-name">ENM–ENSEEIHT · Deep Learning Practical Modules</div>
+                    <div class="project-tech">Python · PyTorch · Jupyter</div>
+                    <div class="project-desc">
+                        Designed 8 progressive ML modules covering: NN fundamentals, CNNs, attention mechanisms,
+                        transformers, semantic segmentation, GANs/WGAN, quantile regression,
+                        learning-to-rank (RankNet + curriculum learning).
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-name">Stochastic Filtering &amp; Data Assimilation</div>
+                    <div class="project-tech">Python · JAX · Flax · NumPy</div>
+                    <div class="project-desc">
+                        4 notebooks: Kalman Filter, Ensemble Kalman Filter (Lorenz dynamics), score-based
+                        diffusion models (JAX/Flax), PageRank via Markov chains.
+                    </div>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-name">Optimal Control — Course Materials &amp; Orbital Transfer</div>
+                    <div class="project-tech">Julia · DifferentialEquations.jl · NLsolve.jl · ForwardDiff.jl</div>
+                    <div class="project-desc">
+                        6 practical modules: ODEs, shooting methods, MPC, automatic differentiation, Runge-Kutta
+                        schemes.
+                        Orbital transfer optimization (Hohmann transfer, 3D trajectory modeling).
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const root = document.documentElement;
+
+        function applyTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) {
+                root.setAttribute('data-theme', stored);
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) root.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        applyTheme();
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme' && e.newValue) {
+                root.setAttribute('data-theme', e.newValue);
+            }
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            }
+        });
+
+        window.addEventListener('beforeprint', () => {
+            root.removeAttribute('data-theme');
+        });
+        window.addEventListener('afterprint', () => {
+            applyTheme();
+        });
+
+        function toggleTheme() {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        function downloadPDF() {
+            const btn = document.querySelector('.download-btn');
+            const orig = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '⏳ Downloading...';
+            fetch('cv-nicolas-bailliet.pdf')
+                .then(r => { if (!r.ok) throw new Error('PDF not found'); return r.blob(); })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = 'cv-nicolas-bailliet.pdf';
+                    document.body.appendChild(a); a.click();
+                    URL.revokeObjectURL(url); document.body.removeChild(a);
+                    btn.textContent = orig; btn.disabled = false;
+                })
+                .catch(() => {
+                    btn.textContent = '❌ Error';
+                    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+                });
+        }
+    </script>
+</body>
+
+</html>
