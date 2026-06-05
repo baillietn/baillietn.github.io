@@ -610,6 +610,19 @@
             margin: 0;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '$', right: '$', display: false }
+                ]
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -717,7 +730,8 @@
 
             <div class="header">
                 <div class="name">Nicolas Bailliet</div>
-                <div class="title-line">LLM / Deep Learning — model training, architecture &amp; inference optimization</div>
+                <div class="title-line">LLM / Deep Learning — model training, architecture &amp; inference optimization
+                </div>
                 <div class="avail-inline">
                     <span class="avail-inline-dot"></span>
                     Seeking 5-month internship · From July 2026 · Paris / Remote
@@ -753,8 +767,7 @@
                                 axes: software maintenance (bug fixing) and numerical validation.</li>
                             <li>Built an automated benchmark looping over 15 control problems: convergence checks for
                                 both the solver and JuMP (reference Julia modeling language), initialization comparison,
-                                and relative error in the L<sup>p</sup> norm — run at p=2 — on the state (x) and control
-                                (u) between the two solvers.</li>
+                                and relative error in the $L^2$ norm on the state $x$ and control $u$ between the two solvers.</li>
                             <li>Validated the Lunar Landing maneuver (minimum-fuel soft touchdown), reproducing known
                                 analytical solutions with high precision and confirming the fix of critical bugs.</li>
                             <li>Investigated an Earth-to-Moon transfer modeled as the Restricted Three-Body Problem
