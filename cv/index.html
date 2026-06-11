@@ -508,16 +508,16 @@
 
         .cv-btn,
         .download-btn {
-            background: var(--cv-section-title);
+            background: linear-gradient(140deg, var(--cv-section-title), var(--cv-date-color));
             color: white;
             border: none;
-            padding: 9px 14px;
-            border-radius: 6px;
+            padding: 0.8rem 1.1rem;
+            border-radius: 999px;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 0.95rem;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(15, 95, 143, 0.3);
-            transition: all 0.2s ease;
+            box-shadow: 0 10px 26px rgba(15, 95, 143, 0.26);
+            transition: transform 220ms ease, box-shadow 220ms ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -526,29 +526,29 @@
 
         .cv-btn:hover,
         .download-btn:hover {
-            background: var(--cv-date-color);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 95, 143, 0.32);
         }
 
         .theme-toggle-cv {
-            background: var(--cv-section-title);
+            background: linear-gradient(140deg, var(--cv-section-title), var(--cv-date-color));
             color: white;
             border: none;
-            padding: 9px 14px;
-            border-radius: 6px;
+            padding: 0.8rem 1.1rem;
+            border-radius: 999px;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 0.95rem;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(15, 95, 143, 0.3);
-            transition: all 0.2s ease;
+            box-shadow: 0 10px 26px rgba(15, 95, 143, 0.26);
+            transition: transform 220ms ease, box-shadow 220ms ease;
             display: inline-flex;
             align-items: center;
             gap: 5px;
         }
 
         .theme-toggle-cv:hover {
-            background: var(--cv-date-color);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 95, 143, 0.32);
         }
 
         .theme-toggle-cv .icon-moon {
@@ -567,6 +567,34 @@
             display: inline;
         }
 
+        .linkedin-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.8rem 1.1rem;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            background: linear-gradient(140deg, var(--cv-section-title), var(--cv-date-color));
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 26px rgba(15, 95, 143, 0.26);
+            transition: transform 220ms ease, box-shadow 220ms ease;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .linkedin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 95, 143, 0.32);
+        }
+
+        .linkedin-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
         @media print {
             :root {
                 --cv-bg: #f0f0f0;
@@ -642,6 +670,11 @@
     </div>
 
     <div class="btn-container-right">
+        <a href="https://linkedin.com/in/nbailliet" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="linkedin-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.475-2.236-1.986-2.236-1.081 0-1.722.722-2.004 1.418-.103.249-.129.597-.129.945v5.442h-3.554s.05-8.824 0-9.736h3.554v1.375c.427-.659 1.191-1.599 2.896-1.599 2.117 0 3.704 1.383 3.704 4.357v5.603zM5.337 8.855c-1.144 0-1.915-.758-1.915-1.707 0-.953.77-1.708 1.963-1.708 1.192 0 1.914.755 1.938 1.708 0 .949-.746 1.707-1.986 1.707zm1.582 11.597H3.635V9.716h3.284v10.736zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+            </svg>
+        </a>
         <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
     </div>
 
@@ -750,8 +783,8 @@
                 <p class="profile-text">
                     Third-year Computer Science student at ENSEEIHT with a strong background in mathematics and
                     optimization.
-                    Built and deployed <strong>HilbertLM</strong> — two transformer LLMs (135M &amp; 163M params)
-                    trained entirely from scratch on 20B tokens using Flash Attention 3 &amp; FP8 quantization on a
+                    Built and deployed <strong>HilbertLM</strong> — two transformer SLMs (135M &amp; 163M params)
+                    trained entirely from scratch on 20B tokens using Flash Attention 3 &amp; BF16/FP8 quantization on a
                     single RTX 5080 (~70h). Full pipeline: custom BPE tokenizer, 4-stage curriculum pre-training,
                     SFT fine-tuning, and HuggingFace deployment with live chatbot.
                     Seeking a role in <strong>LLM training, architecture, or inference optimization</strong>.
