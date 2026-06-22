@@ -125,10 +125,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     try { await ogPage.evaluate(() => document.fonts.ready); } catch (e) {}
     await sleep(250);
 
-    const ogPath = path.resolve(__dirname, 'cv/og-cv.png');
+    const ogPath = path.resolve(__dirname, 'figures/og-cv.png');
     await ogPage.screenshot({ path: ogPath }); 
     const ogKb = (fs.statSync(ogPath).size / 1024).toFixed(2);
-    console.log(`  -> cv/og-cv.png (${ogKb} KB)`);
+    console.log(`  -> figures/og-cv.png (${ogKb} KB)`);
 
     // cleanup temp files
     fs.unlinkSync(thumbPath);
@@ -139,7 +139,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     console.log('');
     console.log('Success! Generated:');
     console.log('  - cv/cv-nicolas-bailliet.pdf  (downloadable CV)');
-    console.log('  - cv/og-cv.png                (LinkedIn / social thumbnail, 1200x630)');
+    console.log('  - figures/og-cv.png            (LinkedIn / social thumbnail, 1200x630)');
 
   } catch (error) {
     console.error('Error:', error.message);
