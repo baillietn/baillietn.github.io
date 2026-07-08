@@ -580,6 +580,51 @@ body {
     height: 20px;
     fill: currentColor;
 }
+@media screen and (max-width: 820px) {
+    body {
+        padding: 0.6rem;
+    }
+
+    .cv-container {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+        grid-template-columns: minmax(0, 1fr);
+        overflow: visible;
+        border-radius: 12px;
+    }
+
+    .sidebar {
+        height: auto;
+    }
+
+    .main-content {
+        overflow: visible;
+    }
+
+    /* Un-pin the floating buttons so they stack above the CV
+       instead of overlapping the content on narrow screens. */
+    .btn-container,
+    .btn-container-right {
+        position: static;
+        justify-content: center;
+    }
+
+    .btn-container-right {
+        margin: 0.5rem 0 0.7rem;
+    }
+
+    /* Let the project title / link URLs wrap instead of forcing
+       the layout wider than a phone screen. */
+    .project-header {
+        flex-wrap: wrap;
+    }
+
+    .project-url {
+        word-break: break-word;
+    }
+}
+
 @media print {
     :root {
         --cv-bg: #f0f0f0;

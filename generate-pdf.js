@@ -49,6 +49,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       container.style.maxWidth = '210mm';
       container.style.height = '297mm';
       container.style.overflow = 'hidden';
+      container.style.gridTemplateColumns = '175px 1fr';
     });
 
     await sleep(300);
@@ -104,7 +105,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     <div class="txt">
       <div class="eyebrow">Curriculum Vitae</div>
       <div class="name">Nicolas<br>Bailliet</div>
-      <div class="role">LLM / Deep Learning — model training, architecture &amp; inference</div>
+      <div class="role">LLM engineer, from training to inference</div>
       <div class="chips">
         <span class="chip">HilbertLM</span>
         <span class="chip">ENSEEIHT</span>
