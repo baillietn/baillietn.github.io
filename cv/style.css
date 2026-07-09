@@ -291,6 +291,14 @@ body {
     margin-top: 0.05rem;
 }
 
+.avail-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    margin-top: 0.3rem;
+}
+
 .avail-inline {
     display: inline-flex;
     align-items: center;
@@ -302,7 +310,6 @@ body {
     font-size: 0.62rem;
     font-weight: 700;
     color: var(--cv-avail-text);
-    margin-top: 0.3rem;
 }
 
 .avail-inline-dot {
