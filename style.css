@@ -713,6 +713,32 @@ h1 {
     white-space: nowrap;
 }
 
+/* Skill levels, matching the CV colour code.
+   Dark theme reuses the CV values; light theme darkens them for contrast. */
+.sl-adv {
+    color: #0f8a63;
+}
+
+.sl-prof {
+    color: #1f6fb2;
+}
+
+.sl-int {
+    color: #b06f10;
+}
+
+:root[data-theme="dark"] .sl-adv {
+    color: #7ff0c8;
+}
+
+:root[data-theme="dark"] .sl-prof {
+    color: #a8d8ff;
+}
+
+:root[data-theme="dark"] .sl-int {
+    color: #ffd080;
+}
+
 /* ── CONTACT ── */
 .contact-grid {
     grid-template-columns: 1fr 1fr;
