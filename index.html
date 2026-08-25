@@ -13,6 +13,14 @@
     <meta property="og:url" content="https://baillietn.github.io">
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
 <body>
@@ -141,7 +149,7 @@
                             <strong>Research Engineer Intern, Optimal Control</strong>, IRIT/ENSEEIHT (2025)<br>
                             <span style="font-size:0.9rem;">Validated an open-source Julia optimal-control solver by
                                 benchmarking 15 problems against JuMP, checking convergence, initialization and the
-                                relative L<sup>2</sup>-norm error on state and control. Contributed unit tests and
+                                relative \(L^2\)-norm error on state and control. Contributed unit tests and
                                 documentation on GitHub.</span>
                             <span class="timeline-impact">15 benchmarks vs JuMP</span>
                         </li>

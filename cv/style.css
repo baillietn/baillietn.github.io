@@ -255,11 +255,28 @@ body {
 /* Languages */
 .languages {
     font-size: 0.66rem;
-    line-height: 1.7;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
 }
 
 .languages strong {
     font-weight: 700;
+}
+
+.lang-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.flag {
+    width: 15px;
+    height: 10px;
+    flex-shrink: 0;
+    border-radius: 1.5px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 /* ── MAIN CONTENT ── */
@@ -369,6 +386,54 @@ body {
     margin-bottom: 0.1rem;
 }
 
+.entry-tech {
+    font-size: 0.6rem;
+    color: var(--cv-date-color);
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+}
+
+/* Entries with an institution logo: fixed gutter, text shifted right */
+.entry-logo-row {
+    position: relative;
+    padding-left: 2.9rem;
+}
+
+.entry-logo {
+    position: absolute;
+    height: auto;
+    background: transparent;
+}
+
+/* Wide wordmark: fills the gutter */
+.logo-wordmark {
+    left: 0;
+    top: 0.12rem;
+    width: 2.45rem;
+}
+
+/* Round badge: narrower, centred on the wordmark's column */
+.logo-badge {
+    left: 0.42rem;
+    top: 0.02rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    object-fit: contain;
+}
+
+/* Two-tone logo: navy artwork in light theme, lifted variant in dark theme */
+.logo-dark {
+    display: none;
+}
+
+:root[data-theme="dark"] .logo-light {
+    display: none;
+}
+
+:root[data-theme="dark"] .logo-dark {
+    display: block;
+}
+
 .entry-desc {
     font-size: 0.66rem;
     color: var(--cv-text-soft);
@@ -377,6 +442,12 @@ body {
 
 .entry-desc ul {
     padding-left: 1rem;
+}
+
+/* In a logo row, bullets hang into the gutter so their text lines up with the title */
+.entry-logo-row .entry-desc ul {
+    padding-left: 0.8rem;
+    margin-left: -0.8rem;
 }
 
 .entry-desc li {

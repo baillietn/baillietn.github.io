@@ -14,7 +14,7 @@
     <meta property="og:url" content="https://baillietn.github.io/cv/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
@@ -131,9 +131,40 @@
             <div>
                 <h3>Languages</h3>
                 <div class="languages">
-                    <strong>French:</strong> Native<br>
-                    <strong>English:</strong> Professional<br>
-                    <strong>Spanish:</strong> Basic
+                    <div class="lang-row">
+                        <svg class="flag" viewBox="0 0 900 600" aria-hidden="true">
+                            <rect width="900" height="600" fill="#ED2939" />
+                            <rect width="600" height="600" fill="#fff" />
+                            <rect width="300" height="600" fill="#002654" />
+                        </svg>
+                        <span><strong>French:</strong> Native</span>
+                    </div>
+                    <div class="lang-row">
+                        <svg class="flag" viewBox="0 0 60 30" aria-hidden="true">
+                            <clipPath id="uk-frame">
+                                <path d="M0,0 v30 h60 v-30 z" />
+                            </clipPath>
+                            <clipPath id="uk-diag">
+                                <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+                            </clipPath>
+                            <g clip-path="url(#uk-frame)">
+                                <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+                                <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-diag)" stroke="#C8102E"
+                                    stroke-width="4" />
+                                <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+                                <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+                            </g>
+                        </svg>
+                        <span><strong>English:</strong> Professional</span>
+                    </div>
+                    <div class="lang-row">
+                        <svg class="flag" viewBox="0 0 750 500" aria-hidden="true">
+                            <rect width="750" height="500" fill="#AA151B" />
+                            <rect y="125" width="750" height="250" fill="#F1BF00" />
+                        </svg>
+                        <span><strong>Spanish:</strong> Basic</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,13 +202,15 @@
             <div class="section">
                 <div class="section-title">Professional Experience</div>
 
-                <div class="entry">
+                <div class="entry entry-logo-row">
+                    <img class="entry-logo logo-badge" src="../figures/logos/logo-irit.png" alt="IRIT">
                     <div class="entry-header">
                         <div class="entry-title">Research Engineer Intern — Optimal Control &amp; Scientific Computing
                         </div>
                         <div class="entry-date">Jun-Aug 2025</div>
                     </div>
                     <div class="entry-sub">IRIT / ENSEEIHT · Toulouse</div>
+                    <div class="entry-tech">Julia · JuMP</div>
                     <div class="entry-desc">
                         <ul>
                             <li>Enhanced and validated an open-source Julia optimal-control solver library, across two
@@ -192,7 +225,7 @@
                                 (CR3BP); implemented regularization to smooth singularities and scoped solver
                                 limitations for future work.</li>
                             <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer
-                                reviews) — positive team feedback for surfacing critical bugs. Stack: Julia · JuMP.</li>
+                                reviews), positive team feedback for surfacing critical bugs.</li>
                         </ul>
                     </div>
                 </div>
@@ -201,7 +234,11 @@
             <div class="section">
                 <div class="section-title">Education</div>
 
-                <div class="entry">
+                <div class="entry entry-logo-row">
+                    <img class="entry-logo logo-wordmark logo-light" src="../figures/logos/logo-toulouse-inp-N7.png"
+                        alt="Toulouse INP — ENSEEIHT (N7)">
+                    <img class="entry-logo logo-wordmark logo-dark" src="../figures/logos/logo-toulouse-inp-N7-dark.png"
+                        alt="" aria-hidden="true">
                     <div class="entry-header">
                         <div class="entry-title">Computer Science &amp; Engineering — ENSEEIHT (INP Toulouse)</div>
                         <div class="entry-date">2023–Present</div>
@@ -209,7 +246,8 @@
                     <div class="entry-desc">ML algorithms, numerical methods, optimization, HPC, big data systems.</div>
                 </div>
 
-                <div class="entry" style="margin-top:0.15rem;">
+                <div class="entry entry-logo-row" style="margin-top:0.25rem;min-height:1.7rem;">
+                    <img class="entry-logo logo-badge" src="../figures/logos/logo-chaptal.png" alt="Lycée Chaptal">
                     <div class="entry-header">
                         <div class="entry-title">Preparatory School, Maths &amp; Physics — Lycée Chaptal, Paris</div>
                         <div class="entry-date">2020–2023</div>
