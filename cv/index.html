@@ -13,20 +13,89 @@
     <meta property="og:url" content="https://baillietn.github.io/cv/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="style.css?v=4">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    { left: '$$', right: '$$', display: true },
-                    { left: '$', right: '$', display: false }
-                ]
-            });
-        });
-    </script>
+    <link rel="stylesheet" href="style.css?v=5">
+    <style>
+/* Plain single-column CV: the US Letter version and the local ATS version.
+           One text flow in reading order: no images, tables, columns or positioned boxes.
+           No text-transform and no letter-spacing: both change the text a parser extracts.
+           Everything is scoped to .plain-cv so the same rules style the preview on the CV page. */
+
+        .plain-cv,
+        .plain-cv * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .plain-cv {
+            font-family: Arial, 'Liberation Sans', Helvetica, sans-serif;
+            font-size: 10pt;
+            line-height: 1.32;
+            font-variant-ligatures: none;
+            hyphens: manual;
+            text-align: left;
+        }
+
+        .plain-cv h1 {
+            font-size: 18pt;
+            line-height: 1.15;
+        }
+
+        .plain-cv .contact {
+            margin-top: 2pt;
+            text-wrap: balance;
+        }
+
+        .plain-cv h2 {
+            font-size: 12pt;
+            margin-top: 9pt;
+            margin-bottom: 4pt;
+            padding-bottom: 1pt;
+            border-bottom: 0.75pt solid currentColor;
+            break-after: avoid;
+        }
+
+        .plain-cv h3 {
+            font-size: 10.5pt;
+            margin-top: 6pt;
+            break-after: avoid;
+        }
+
+        .plain-cv h2 + h3 {
+            margin-top: 0;
+        }
+
+        .plain-cv p + p {
+            margin-top: 1pt;
+        }
+
+        /* A text bullet, not the browser's drawn disc: it survives text extraction,
+           so a parser can still tell where each item starts. */
+        .plain-cv ul {
+            padding-left: 11pt;
+            list-style-type: "•  ";
+        }
+
+        .plain-cv li {
+            margin-top: 1pt;
+        }
+
+        .plain-cv p,
+        .plain-cv li {
+            break-inside: avoid;
+        }
+
+        .plain-cv a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Set by the generator around hyphenated words, so they never break across lines:
+           text extractors glue them back without the hyphen. */
+        .plain-cv .nobreak {
+            white-space: nowrap;
+        }
+    </style>
 </head>
 
 <body>
@@ -47,6 +116,10 @@
             </svg>
         </a>
         <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+        <div class="view-switch" role="group" aria-label="CV version">
+            <button class="view-option" data-view="design" onclick="setView('design')">Design</button>
+            <button class="view-option" data-view="letter" onclick="setView('letter')">US Letter</button>
+        </div>
     </div>
 
     <div class="cv-container">
@@ -191,7 +264,7 @@
                     <div class="entry-desc">
                         <ul>
                             <li>Enhanced and validated an open-source Julia optimal-control solver library, across two axes: software maintenance (bug fixing) and numerical validation.</li>
-                            <li>Built an automated benchmark looping over 15 control problems: convergence checks for both the solver and JuMP (reference Julia modeling language), initialization comparison, and relative error in the $L^2$ norm on the state $x$ and control $u$ between the two solvers.</li>
+                            <li>Built an automated benchmark looping over 15 control problems: convergence checks for both the solver and JuMP (reference Julia modeling language), initialization comparison, and relative error in the L² norm on the state x and control u between the two solvers.</li>
                             <li>Validated the Lunar Landing maneuver (minimum-fuel soft touchdown), reproducing known analytical solutions with high precision and confirming the fix of critical bugs.</li>
                             <li>Investigated an Earth-to-Moon transfer modeled as the Restricted Three-Body Problem (CR3BP); implemented regularization to smooth singularities and scoped solver limitations for future work.</li>
                             <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer reviews), positive team feedback for surfacing critical bugs.</li>
@@ -268,6 +341,58 @@
         </div>
     </div>
 
+    <div class="letter-sheet">
+        <div class="plain-cv">
+            <h1>Nicolas Bailliet</h1>
+            <p class="contact">
+                <a href="mailto:nicolas.bailliet@etu.toulouse-inp.fr">nicolas.bailliet@etu.<span class="nobreak">toulouse-inp</span>.fr</a>
+                | +33 6 51 75 16 99
+                | Paris, France
+                | <a href="https://github.com/baillietn">github.com/baillietn</a>
+                | <a href="https://linkedin.com/in/nbailliet">linkedin.com/in/nbailliet</a>
+                | <a href="https://huggingface.co/baillietn">huggingface.co/baillietn</a>
+                | <a href="https://baillietn.github.io">baillietn.github.io</a>
+            </p>
+
+            <h2>Summary</h2>
+            <p><span class="nobreak">Third-year</span> Computer Science student at ENSEEIHT, with a background in mathematics and numerical optimization. I train language models from scratch, on a single desktop GPU. My latest, HilbertLM, was written end to end: custom tokenizer, <span class="nobreak">pre-training</span>, <span class="nobreak">fine-tuning</span>, then a live chatbot anyone can talk to. Now I want to build and deploy LLM and agentic systems in production, and <span class="nobreak">fine-tune</span> models for the teams that use them.</p>
+            <p>Seeking a <span class="nobreak">6-month</span> internship outside France from <span class="nobreak">mid-March</span> 2027 · Based in Paris · Open to relocation · EU citizen</p>
+            <h2>Experience</h2>
+            <h3>Research Engineer Intern — Optimal Control &amp; Scientific Computing</h3>
+            <p>IRIT / ENSEEIHT, Toulouse | Jun 2025 – Aug 2025</p>
+            <p>Technologies: Julia, JuMP</p>
+            <ul>
+                <li>Enhanced and validated an <span class="nobreak">open-source</span> Julia <span class="nobreak">optimal-control</span> solver library, across two axes: software maintenance (bug fixing) and numerical validation.</li>
+                <li>Built an automated benchmark looping over 15 control problems: convergence checks for both the solver and JuMP (reference Julia modeling language), initialization comparison, and relative error in the L² norm on the state x and control u between the two solvers.</li>
+                <li>Validated the Lunar Landing maneuver (<span class="nobreak">minimum-fuel</span> soft touchdown), reproducing known analytical solutions with high precision and confirming the fix of critical bugs.</li>
+                <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer reviews), positive team feedback for surfacing critical bugs.</li>
+            </ul>
+            <h2>Education</h2>
+            <h3>Computer Science &amp; Engineering — ENSEEIHT (INP Toulouse)</h3>
+            <p>Sep 2023 – Present</p>
+            <p>ML algorithms, numerical methods, optimization, HPC, big data systems.</p>
+            <h3>Preparatory School, Maths &amp; Physics — Lycée Chaptal, Paris</h3>
+            <p>Sep 2020 – Jul 2023</p>
+            <h2>Projects</h2>
+            <h3>HilbertLM (135M &amp; 163M)</h3>
+            <p>
+                Live demo: <a href="https://baillietn.github.io/HilbertLM-Lab/">baillietn.github.io/<span class="nobreak">HilbertLM-Lab</span>/</a> |
+                HuggingFace: <a href="https://huggingface.co/collections/baillietn/hilbertlm">huggingface.co/collections/baillietn/hilbertlm</a>
+            </p>
+            <p>135M &amp; 163M params | 20B tokens trained | ~70h · RTX 5080 | 79K tok/s throughput | 4 models on HF Hub</p>
+            <p>Technologies: Python, PyTorch, Transformer Engine, Flash Attention 3, FP8, HuggingFace, BPE</p>
+            <p>Two <span class="nobreak">decoder-only</span> transformers built entirely from scratch. <span class="nobreak">30-layer</span> architecture: GQA (9Q/3KV heads), RoPE, SwiGLU — custom BPE tokenizer (49K vocab). <span class="nobreak">4-stage</span> curriculum <span class="nobreak">pre-training</span> (<span class="nobreak">FineWeb-Edu</span>, <span class="nobreak">Python-Edu</span>, FineMath, <span class="nobreak">Cosmopedia-v2</span>) + SFT on 100M conversational tokens (SmolTalk). Loss landscape visualization via PCA on checkpoints. Deployed as Base &amp; Chat variants (BF16 + FP8) on HuggingFace Hub with streaming chatbot interface.</p>
+
+            <h2>Skills</h2>
+            <p><strong>Machine Learning &amp; LLMs:</strong> LLM architecture (GQA · RoPE · SwiGLU), <span class="nobreak">Pre-training</span> pipeline (data · curriculum · BPE), <span class="nobreak">Fine-tuning</span> (SFT), <span class="nobreak">Mixed-precision</span> training (BF16/FP8), Inference &amp; deployment (HF)</p>
+            <p><strong>Frameworks &amp; Tools:</strong> Python, PyTorch, HuggingFace, Transformer Engine, Flash Attention, FP8 / BF16, JAX/Flax, NumPy, <span class="nobreak">scikit-learn</span>, Julia, SQL, Git, Linux, HPC</p>
+
+            <h2>Languages</h2>
+            <p>French: Native, English: Professional, Spanish: Basic</p>
+        </div>
+
+    </div>
+
     <script>
         const root = document.documentElement;
 
@@ -309,17 +434,29 @@
             localStorage.setItem('theme', next);
         }
 
+        // Two versions of the CV: the designed one and the plain US Letter one.
+        const PDF_FILES = { design: 'cv-nicolas-bailliet.pdf', letter: 'cv-nicolas-bailliet-us-letter.pdf' };
+
+        function setView(view) {
+            root.setAttribute('data-view', view);
+            document.querySelectorAll('.view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
+            history.replaceState(null, '', view === 'letter' ? '#us-letter' : location.pathname + location.search);
+        }
+
+        setView(location.hash === '#us-letter' ? 'letter' : 'design');
+
         function downloadPDF() {
             const btn = document.querySelector('.download-btn');
             const orig = btn.textContent;
+            const file = PDF_FILES[root.getAttribute('data-view')];
             btn.disabled = true;
             btn.textContent = '⏳ Downloading...';
-            fetch('cv-nicolas-bailliet.pdf')
+            fetch(file)
                 .then(r => { if (!r.ok) throw new Error('PDF not found'); return r.blob(); })
                 .then(blob => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = url; a.download = 'cv-nicolas-bailliet.pdf';
+                    a.href = url; a.download = file;
                     document.body.appendChild(a); a.click();
                     URL.revokeObjectURL(url); document.body.removeChild(a);
                     btn.textContent = orig; btn.disabled = false;

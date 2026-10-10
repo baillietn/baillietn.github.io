@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ cv.identity.name }} - CV</title>
+    <style>
+        @page {
+            size: {{ paper }};
+            margin: 12.7mm;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        {% filter indent(8) %}
+        {% include 'plain.css' %}
+        {% endfilter %}
+    </style>
+</head>
+
+<body>
+{{ body }}</body>
+
+</html>

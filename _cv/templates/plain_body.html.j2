@@ -1,0 +1,64 @@
+{# Body of the plain CV. The order of this file is the reading order of the PDF. #}
+<div class="plain-cv">
+    <h1>{{ cv.identity.name }}</h1>
+    <p class="contact">
+        <a href="mailto:{{ cv.identity.email }}">{{ cv.identity.email }}</a>
+        {% if cv.identity.phone %}
+        | {{ cv.identity.phone }}
+        {% endif %}
+        | {{ cv.identity.location }}
+        {% for link in cv.identity.links %}
+        | <a href="{{ link.url }}">{{ link.url | bare_url }}</a>
+        {% endfor %}
+    </p>
+
+    {% for section in cv.sections %}
+    <h2>{{ section.plain_title or section.title }}</h2>
+    {% if section.text %}
+    <p>{{ section.text | plain }}</p>
+    {% if loop.first %}
+    <p>{{ cv.availability.seeking }} · {{ cv.availability.location_note }}</p>
+    {% endif %}
+    {% endif %}
+    {% for entry in section.entries %}
+    <h3>{{ entry.title }}</h3>
+    {% set where = [entry.organization, entry.location] | select | join(', ') %}
+    {% set when = dates(entry.start, entry.end) if entry.start else '' %}
+    {% if where or when %}
+    <p>{{ [where, when] | select | join(' | ') }}</p>
+    {% endif %}
+    {% if entry.links %}
+    <p>
+        {% for link in entry.links %}
+        {{ link.label }}: <a href="{{ link.url }}">{{ link.display }}</a>{% if not loop.last %} |{% endif %}
+
+        {% endfor %}
+    </p>
+    {% endif %}
+    {% if entry.metrics %}
+    <p>{{ entry.metrics | join(' | ') }}</p>
+    {% endif %}
+    {% if entry.tech %}
+    <p>Technologies: {{ entry.tech | join(', ') }}</p>
+    {% endif %}
+    {% if entry.description %}
+    <p>{{ entry.description | plain }}</p>
+    {% endif %}
+    {% if entry.bullets %}
+    <ul>
+        {% for bullet in entry.bullets %}
+        <li>{{ bullet | plain }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+
+    <h2>Skills</h2>
+    {% for group in cv.skills %}
+    <p><strong>{{ group.category }}:</strong> {% for item in group['items'] %}{{ item.name if item is mapping else item }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+    {% endfor %}
+
+    <h2>Languages</h2>
+    <p>{% for language in cv.languages %}{{ language.name }}: {{ language.level }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+</div>

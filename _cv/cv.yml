@@ -1,10 +1,18 @@
 # Content of the CV. Every version of the CV is generated from this file by ./generate-cv.sh
 #
-# Text fields accept **bold**. Dates are "YYYY-MM" or "present".
+# Text fields accept **bold**; no HTML, no LaTeX. Dates are "YYYY-MM" or "present".
+#
+# Versions: `design` (the CV page and its A4 PDF), `letter` (plain one-page US Letter PDF,
+# published) and `ats` (plain A4 PDF with everything, local only).
+# `hide_in: [letter]` on an entry, a skill, a link or a whole section leaves it out of a
+# version. A bullet that needs it is written as:
+#       - text: "..."
+#         hide_in: [letter]
 #
 # `sections` is the main column, in order. To add a section, add an item to the list:
 #
 #   - title: Publications          # heading
+#     plain_title: Publications    # optional: another heading in the plain versions
 #     entries:                     # a list of entries ...
 #       - title: "..."             #   (all fields but `title` are optional)
 #         organization: "..."
@@ -59,6 +67,7 @@ availability:
 
 sections:
   - title: Professional Profile
+    plain_title: Summary
     text: >-
       Third-year Computer Science student at ENSEEIHT, with a background in
       mathematics and numerical optimization. I train language models
@@ -69,6 +78,7 @@ sections:
       the teams that use them.
 
   - title: Professional Experience
+    plain_title: Experience
     entries:
       - title: "Research Engineer Intern — Optimal Control & Scientific Computing"
         organization: IRIT / ENSEEIHT
@@ -85,16 +95,17 @@ sections:
             Built an automated benchmark looping over 15 control problems:
             convergence checks for both the solver and JuMP (reference Julia
             modeling language), initialization comparison, and relative error
-            in the $L^2$ norm on the state $x$ and control $u$ between the two
+            in the L² norm on the state x and control u between the two
             solvers.
           - >-
             Validated the Lunar Landing maneuver (minimum-fuel soft touchdown),
             reproducing known analytical solutions with high precision and
             confirming the fix of critical bugs.
-          - >-
-            Investigated an Earth-to-Moon transfer modeled as the Restricted
-            Three-Body Problem (CR3BP); implemented regularization to smooth
-            singularities and scoped solver limitations for future work.
+          - text: >-
+              Investigated an Earth-to-Moon transfer modeled as the Restricted
+              Three-Body Problem (CR3BP); implemented regularization to smooth
+              singularities and scoped solver limitations for future work.
+            hide_in: [letter]
           - >-
             Contributed unit tests & API documentation via GitHub (commits,
             Pull Requests, peer reviews), positive team feedback for surfacing
@@ -138,23 +149,27 @@ sections:
           checkpoints. Deployed as Base & Chat variants (BF16 + FP8) on
           HuggingFace Hub with streaming chatbot interface.
       - title: "Soprasteria–ENSEEIHT · Water Quality IBD Prediction"
+        hide_in: [letter]
         tech: [Python, TensorFlow/Keras, scikit-learn, pandas]
         description: >-
           Neural network predicting Biological Diatom Index for river ecosystem
           monitoring. 70+ environmental features from Naïades DB (2000–2025);
           BatchNorm & Dropout; anomaly detection & feature importance analysis.
       - title: "ENM–ENSEEIHT · Deep Learning Practical Modules"
+        hide_in: [letter]
         tech: [Python, PyTorch, Jupyter]
         description: >-
           Completed 8 progressive ML modules covering: NN fundamentals, CNNs,
           attention mechanisms, transformers, semantic segmentation, GANs/WGAN,
           quantile regression, learning-to-rank (RankNet + curriculum learning).
       - title: "Stochastic Filtering & Data Assimilation"
+        hide_in: [letter]
         tech: [Python, JAX, Flax, NumPy]
         description: >-
           4 notebooks: Kalman Filter, Ensemble Kalman Filter (Lorenz dynamics),
           score-based diffusion models (JAX/Flax), PageRank via Markov chains.
       - title: "Optimal Control — Course Materials & Orbital Transfer"
+        hide_in: [letter]
         tech: [Julia, DifferentialEquations.jl, NLsolve.jl, ForwardDiff.jl]
         description: >-
           6 practical modules: ODEs, shooting methods, MPC, automatic
@@ -177,6 +192,7 @@ skills:
       - name: "Inference & deployment (HF)"
         level: Intermediate
   - category: "Numerical & Optimization"
+    hide_in: [letter]
     items:
       - name: "Numerical optimization (constrained)"
         level: Advanced

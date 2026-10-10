@@ -15,20 +15,12 @@
     <meta property="og:url" content="{{ cv.meta.url }}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="style.css?v=4">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    { left: '$$', right: '$$', display: true },
-                    { left: '$', right: '$', display: false }
-                ]
-            });
-        });
-    </script>
+    <link rel="stylesheet" href="style.css?v=5">
+    <style>
+        {% filter indent(8) %}
+        {% include 'plain.css' %}
+        {% endfilter %}
+    </style>
 </head>
 
 <body>
@@ -49,6 +41,10 @@
             </svg>
         </a>
         <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+        <div class="view-switch" role="group" aria-label="CV version">
+            <button class="view-option" data-view="design" onclick="setView('design')">Design</button>
+            <button class="view-option" data-view="letter" onclick="setView('letter')">US Letter</button>
+        </div>
     </div>
 
     <div class="cv-container">
@@ -205,6 +201,11 @@
         </div>
     </div>
 
+    {# Preview of the US Letter version: the same HTML that is printed to its PDF. #}
+    <div class="letter-sheet">
+        {{ letter_body | indent(8) }}
+    </div>
+
     <script>
         const root = document.documentElement;
 
@@ -246,17 +247,29 @@
             localStorage.setItem('theme', next);
         }
 
+        // Two versions of the CV: the designed one and the plain US Letter one.
+        const PDF_FILES = { design: 'cv-nicolas-bailliet.pdf', letter: 'cv-nicolas-bailliet-us-letter.pdf' };
+
+        function setView(view) {
+            root.setAttribute('data-view', view);
+            document.querySelectorAll('.view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
+            history.replaceState(null, '', view === 'letter' ? '#us-letter' : location.pathname + location.search);
+        }
+
+        setView(location.hash === '#us-letter' ? 'letter' : 'design');
+
         function downloadPDF() {
             const btn = document.querySelector('.download-btn');
             const orig = btn.textContent;
+            const file = PDF_FILES[root.getAttribute('data-view')];
             btn.disabled = true;
             btn.textContent = '⏳ Downloading...';
-            fetch('cv-nicolas-bailliet.pdf')
+            fetch(file)
                 .then(r => { if (!r.ok) throw new Error('PDF not found'); return r.blob(); })
                 .then(blob => {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
-                    a.href = url; a.download = 'cv-nicolas-bailliet.pdf';
+                    a.href = url; a.download = file;
                     document.body.appendChild(a); a.click();
                     URL.revokeObjectURL(url); document.body.removeChild(a);
                     btn.textContent = orig; btn.disabled = false;

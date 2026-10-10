@@ -1,0 +1,80 @@
+/* Plain single-column CV: the US Letter version and the local ATS version.
+   One text flow in reading order: no images, tables, columns or positioned boxes.
+   No text-transform and no letter-spacing: both change the text a parser extracts.
+   Everything is scoped to .plain-cv so the same rules style the preview on the CV page. */
+
+.plain-cv,
+.plain-cv * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.plain-cv {
+    font-family: Arial, 'Liberation Sans', Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.32;
+    font-variant-ligatures: none;
+    hyphens: manual;
+    text-align: left;
+}
+
+.plain-cv h1 {
+    font-size: 18pt;
+    line-height: 1.15;
+}
+
+.plain-cv .contact {
+    margin-top: 2pt;
+    text-wrap: balance;
+}
+
+.plain-cv h2 {
+    font-size: 12pt;
+    margin-top: 9pt;
+    margin-bottom: 4pt;
+    padding-bottom: 1pt;
+    border-bottom: 0.75pt solid currentColor;
+    break-after: avoid;
+}
+
+.plain-cv h3 {
+    font-size: 10.5pt;
+    margin-top: 6pt;
+    break-after: avoid;
+}
+
+.plain-cv h2 + h3 {
+    margin-top: 0;
+}
+
+.plain-cv p + p {
+    margin-top: 1pt;
+}
+
+/* A text bullet, not the browser's drawn disc: it survives text extraction,
+   so a parser can still tell where each item starts. */
+.plain-cv ul {
+    padding-left: 11pt;
+    list-style-type: "•  ";
+}
+
+.plain-cv li {
+    margin-top: 1pt;
+}
+
+.plain-cv p,
+.plain-cv li {
+    break-inside: avoid;
+}
+
+.plain-cv a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Set by the generator around hyphenated words, so they never break across lines:
+   text extractors glue them back without the hyphen. */
+.plain-cv .nobreak {
+    white-space: nowrap;
+}
