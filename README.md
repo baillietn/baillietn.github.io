@@ -6,15 +6,28 @@ Personal portfolio and CV website for Nicolas Bailliet — LLM / Deep Learning �
 
 ```
 .
-├── index.html                          # Portfolio page
+├── index.html, style.css               # Portfolio page (hand-written)
 ├── cv/
-│   ├── index.html                      # CV page (A4 format)
-│   └── cv-nicolas-bailliet.pdf         # Generated PDF
+│   ├── index.html                      # CV page, GENERATED: do not edit by hand
+│   ├── style.css                       # CV page styles
+│   └── cv-nicolas-bailliet.pdf         # GENERATED PDF
 ├── figures/                            # Images
-├── generate-cv.sh                      # PDF generation script
-├── generate-pdf.js                     # Puppeteer automation
-├── package.json                        # Dependencies
-└── README.md
+├── _cv/                                # CV source and generator
+│   ├── cv.yml                          # CV content: the only place to edit the CV
+│   ├── templates/                      # HTML templates (Jinja2)
+│   ├── generate.py                     # Generator
+│   └── local/                          # Git-ignored: intermediate files
+└── generate-cv.sh                      # Regenerates everything
 ```
 
-To regenerate the PDF: `./generate-cv.sh`
+## Editing the CV
+
+Edit `_cv/cv.yml`, then run `./generate-cv.sh` and commit the generated files.
+
+The first run creates a Python environment in `.venv/` and downloads Chromium.
+
+Adding an item to a list (a job, a project, a skill, a bullet) or a whole section under
+`sections:` needs no template change: see the comments at the top of `_cv/cv.yml`.
+
+`_cv/` starts with an underscore on purpose: GitHub Pages does not publish such folders,
+so the CV source and the generator stay out of the public site.

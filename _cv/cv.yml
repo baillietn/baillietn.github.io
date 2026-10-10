@@ -1,0 +1,212 @@
+# Content of the CV. Every version of the CV is generated from this file by ./generate-cv.sh
+#
+# Text fields accept **bold**. Dates are "YYYY-MM" or "present".
+#
+# `sections` is the main column, in order. To add a section, add an item to the list:
+#
+#   - title: Publications          # heading
+#     entries:                     # a list of entries ...
+#       - title: "..."             #   (all fields but `title` are optional)
+#         organization: "..."
+#         location: "..."
+#         start: "2026-01"
+#         end: present
+#         tech: [Python, PyTorch]
+#         description: "..."
+#         bullets:
+#           - "..."
+#
+#   - title: About me
+#     text: "..."                  # ... or a paragraph instead of entries
+#
+# `style: projects` on a section renders its entries as project cards (name, links,
+# metrics, tech, description) instead of dated entries.
+
+meta:
+  title: "Nicolas Bailliet — CV | LLM / Deep Learning — model training & inference"
+  description: "Nicolas Bailliet — CV. LLM training, architecture & inference. HilbertLM (LLMs from scratch), IRIT optimal-control internship, ENSEEIHT."
+  og_title: "Nicolas Bailliet — CV | LLM training, architecture & inference"
+  og_description: "LLM training, architecture & inference · HilbertLM · IRIT · ENSEEIHT — view the full CV."
+  og_image: https://baillietn.github.io/figures/og-cv.png
+  url: https://baillietn.github.io/cv/
+
+identity:
+  name: Nicolas Bailliet
+  title: LLM engineer
+  photo: figures/Nicolas.jpg
+  phone: "+33 6 51 75 16 99"
+  email: nicolas.bailliet@etu.toulouse-inp.fr
+  location: Paris, France
+  links:
+    - id: github
+      label: github.com/baillietn
+      url: https://github.com/baillietn
+    - id: linkedin
+      label: linkedin.com/in/nbailliet
+      url: https://linkedin.com/in/nbailliet
+    - id: hf
+      label: hf.co/baillietn
+      url: https://huggingface.co/baillietn
+    - id: portfolio
+      label: baillietn.github.io
+      url: https://baillietn.github.io
+
+availability:
+  badge: "Open to internship abroad · March 2027"
+  seeking: "Seeking a 6-month internship outside France from mid-March 2027"
+  location_note: "Based in Paris · Open to relocation · EU citizen"
+  focus: "LLM engineering & agentic systems, MLOps, model fine-tuning"
+
+sections:
+  - title: Professional Profile
+    text: >-
+      Third-year Computer Science student at ENSEEIHT, with a background in
+      mathematics and numerical optimization. I train language models
+      **from scratch, on a single desktop GPU**. My latest, **HilbertLM**, was
+      written end to end: custom tokenizer, pre-training, fine-tuning, then a
+      live chatbot anyone can talk to. Now I want to build and deploy
+      **LLM and agentic systems** in production, and **fine-tune models** for
+      the teams that use them.
+
+  - title: Professional Experience
+    entries:
+      - title: "Research Engineer Intern — Optimal Control & Scientific Computing"
+        organization: IRIT / ENSEEIHT
+        location: Toulouse
+        start: "2025-06"
+        end: "2025-08"
+        tech: [Julia, JuMP]
+        bullets:
+          - >-
+            Enhanced and validated an open-source Julia optimal-control solver
+            library, across two axes: software maintenance (bug fixing) and
+            numerical validation.
+          - >-
+            Built an automated benchmark looping over 15 control problems:
+            convergence checks for both the solver and JuMP (reference Julia
+            modeling language), initialization comparison, and relative error
+            in the $L^2$ norm on the state $x$ and control $u$ between the two
+            solvers.
+          - >-
+            Validated the Lunar Landing maneuver (minimum-fuel soft touchdown),
+            reproducing known analytical solutions with high precision and
+            confirming the fix of critical bugs.
+          - >-
+            Investigated an Earth-to-Moon transfer modeled as the Restricted
+            Three-Body Problem (CR3BP); implemented regularization to smooth
+            singularities and scoped solver limitations for future work.
+          - >-
+            Contributed unit tests & API documentation via GitHub (commits,
+            Pull Requests, peer reviews), positive team feedback for surfacing
+            critical bugs.
+
+  - title: Education
+    entries:
+      - title: "Computer Science & Engineering — ENSEEIHT (INP Toulouse)"
+        start: "2023-09"
+        end: present
+        description: "ML algorithms, numerical methods, optimization, HPC, big data systems."
+      - title: "Preparatory School, Maths & Physics — Lycée Chaptal, Paris"
+        start: "2020-09"
+        end: "2023-07"
+
+  - title: Projects
+    style: projects
+    entries:
+      - title: "HilbertLM (135M & 163M)"
+        featured: true
+        links:
+          - label: Live demo
+            url: https://baillietn.github.io/HilbertLM-Lab/
+            display: baillietn.github.io/HilbertLM-Lab/
+          - label: HuggingFace
+            url: https://huggingface.co/collections/baillietn/hilbertlm
+            display: huggingface.co/collections/baillietn/hilbertlm
+        metrics:
+          - "135M & 163M params"
+          - "20B tokens trained"
+          - "~70h · RTX 5080"
+          - "79K tok/s throughput"
+          - "4 models on HF Hub"
+        tech: [Python, PyTorch, Transformer Engine, Flash Attention 3, FP8, HuggingFace, BPE]
+        description: >-
+          Two decoder-only transformers built entirely from scratch. 30-layer
+          architecture: GQA (9Q/3KV heads), RoPE, SwiGLU — custom BPE tokenizer
+          (49K vocab). 4-stage curriculum pre-training (FineWeb-Edu,
+          Python-Edu, FineMath, Cosmopedia-v2) + SFT on 100M conversational
+          tokens (SmolTalk). Loss landscape visualization via PCA on
+          checkpoints. Deployed as Base & Chat variants (BF16 + FP8) on
+          HuggingFace Hub with streaming chatbot interface.
+      - title: "Soprasteria–ENSEEIHT · Water Quality IBD Prediction"
+        tech: [Python, TensorFlow/Keras, scikit-learn, pandas]
+        description: >-
+          Neural network predicting Biological Diatom Index for river ecosystem
+          monitoring. 70+ environmental features from Naïades DB (2000–2025);
+          BatchNorm & Dropout; anomaly detection & feature importance analysis.
+      - title: "ENM–ENSEEIHT · Deep Learning Practical Modules"
+        tech: [Python, PyTorch, Jupyter]
+        description: >-
+          Completed 8 progressive ML modules covering: NN fundamentals, CNNs,
+          attention mechanisms, transformers, semantic segmentation, GANs/WGAN,
+          quantile regression, learning-to-rank (RankNet + curriculum learning).
+      - title: "Stochastic Filtering & Data Assimilation"
+        tech: [Python, JAX, Flax, NumPy]
+        description: >-
+          4 notebooks: Kalman Filter, Ensemble Kalman Filter (Lorenz dynamics),
+          score-based diffusion models (JAX/Flax), PageRank via Markov chains.
+      - title: "Optimal Control — Course Materials & Orbital Transfer"
+        tech: [Julia, DifferentialEquations.jl, NLsolve.jl, ForwardDiff.jl]
+        description: >-
+          6 practical modules: ODEs, shooting methods, MPC, automatic
+          differentiation, Runge-Kutta schemes. Orbital transfer optimization
+          (Hohmann transfer, 3D trajectory modeling).
+
+# Sidebar. A skill is either a plain keyword or {name, level};
+# levels are Advanced, Proficient or Intermediate.
+skills:
+  - category: "Machine Learning & LLMs"
+    items:
+      - name: "LLM architecture (GQA · RoPE · SwiGLU)"
+        level: Proficient
+      - name: "Pre-training pipeline (data · curriculum · BPE)"
+        level: Proficient
+      - name: "Fine-tuning (SFT)"
+        level: Proficient
+      - name: "Mixed-precision training (BF16/FP8)"
+        level: Intermediate
+      - name: "Inference & deployment (HF)"
+        level: Intermediate
+  - category: "Numerical & Optimization"
+    items:
+      - name: "Numerical optimization (constrained)"
+        level: Advanced
+      - name: "Optimal control · ODE solvers (shooting · MPC)"
+        level: Proficient
+  - category: "Frameworks & Tools"
+    items:
+      - Python
+      - PyTorch
+      - HuggingFace
+      - Transformer Engine
+      - Flash Attention
+      - FP8 / BF16
+      - JAX/Flax
+      - NumPy
+      - scikit-learn
+      - Julia
+      - SQL
+      - Git
+      - Linux
+      - HPC
+
+# code: fr, en or es (picks the flag)
+languages:
+  - code: fr
+    name: French
+    level: Native
+  - code: en
+    name: English
+    level: Professional
+  - code: es
+    name: Spanish
+    level: Basic

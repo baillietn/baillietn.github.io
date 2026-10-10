@@ -1,0 +1,30 @@
+{% macro flag(code) %}
+{% if code == 'fr' %}
+<svg class="flag" viewBox="0 0 900 600" aria-hidden="true">
+    <rect width="900" height="600" fill="#ED2939" />
+    <rect width="600" height="600" fill="#fff" />
+    <rect width="300" height="600" fill="#002654" />
+</svg>
+{% elif code == 'en' %}
+<svg class="flag" viewBox="0 0 60 30" aria-hidden="true">
+    <clipPath id="uk-frame">
+        <path d="M0,0 v30 h60 v-30 z" />
+    </clipPath>
+    <clipPath id="uk-diag">
+        <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+    </clipPath>
+    <g clip-path="url(#uk-frame)">
+        <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6" />
+        <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-diag)" stroke="#C8102E" stroke-width="4" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+    </g>
+</svg>
+{% elif code == 'es' %}
+<svg class="flag" viewBox="0 0 750 500" aria-hidden="true">
+    <rect width="750" height="500" fill="#AA151B" />
+    <rect y="125" width="750" height="250" fill="#F1BF00" />
+</svg>
+{% endif %}
+{% endmacro %}

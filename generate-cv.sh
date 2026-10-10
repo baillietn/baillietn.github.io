@@ -1,24 +1,28 @@
 #!/bin/bash
+# Regenerates every version of the CV from _cv/cv.yml.
 
 set -e
+cd "$(dirname "$0")"
 
-echo "CV PDF Generator"
-echo "================"
+echo "CV Generator"
+echo "============"
 
-if ! command -v npm &> /dev/null; then
-    echo "Error: npm is not installed. Please install Node.js first."
+if ! command -v python3 &> /dev/null; then
+    echo "Error: python3 is not installed."
     exit 1
 fi
 
-if [ ! -d "node_modules" ]; then
+if [ ! -d ".venv" ]; then
     echo "Installing dependencies..."
-    npm install
+    python3 -m venv .venv
+    .venv/bin/pip install --quiet -r _cv/requirements.txt
+    .venv/bin/playwright install chromium
 else
     echo "Dependencies already installed"
 fi
 
-echo "Generating vectorial PDF..."
-npm run export-pdf
+echo "Generating the CV from _cv/cv.yml..."
+.venv/bin/python _cv/generate.py
 
 echo ""
-echo "Done! Your PDF is ready to download from the website."
+echo "Done! Commit the generated files to publish them."

@@ -12,3 +12,11 @@ Thumbs.db
 *.swp
 *.swo
 
+
+# Python
+.venv/
+__pycache__/
+
+# Local-only files: intermediate files of the CV generator, private notes
+_cv/local/
+private/
