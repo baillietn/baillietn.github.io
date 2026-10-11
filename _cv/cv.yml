@@ -97,10 +97,6 @@ sections:
             modeling language), initialization comparison, and relative error
             in the L² norm on the state x and control u between the two
             solvers.
-          - >-
-            Validated the Lunar Landing maneuver (minimum-fuel soft touchdown),
-            reproducing known analytical solutions with high precision and
-            confirming the fix of critical bugs.
           - text: >-
               Investigated an Earth-to-Moon transfer modeled as the Restricted
               Three-Body Problem (CR3BP); implemented regularization to smooth
@@ -120,6 +116,7 @@ sections:
       - title: "Preparatory School, Maths & Physics — Lycée Chaptal, Paris"
         start: "2020-09"
         end: "2023-07"
+        description: "Linear algebra, real analysis, probability theory, differential equations."
 
   - title: Projects
     style: projects
@@ -223,6 +220,4 @@ languages:
   - code: en
     name: English
     level: Professional
-  - code: es
-    name: Spanish
-    level: Basic
+
