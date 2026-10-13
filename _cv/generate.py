@@ -94,10 +94,10 @@ def parse_date(value):
 
 
 def design_dates(start, end):
-    """Date range on the designed CV: months within one year ('Jun-Aug 2025'), years otherwise ('2023–Present')."""
+    """Date range on the designed CV: months within one year ('Jun–Aug 2025'), years otherwise ('2023–Present')."""
     s, e = parse_date(start), parse_date(end)
     if e and s[0] == e[0] and s[1] and e[1]:
-        return f"{MONTHS[s[1] - 1]}-{MONTHS[e[1] - 1]} {s[0]}"
+        return f"{MONTHS[s[1] - 1]}–{MONTHS[e[1] - 1]} {s[0]}"
     return f"{s[0]}–{e[0] if e else 'Present'}"
 
 
@@ -150,14 +150,21 @@ DESIGN_OVERFLOW = """
 """
 
 
-def print_pdf(browser, html_path, pdf_path, max_pages=None, fixed_page=False):
-    """Print a page to PDF; paper size and margins come from the page's own CSS."""
+def print_pdf(browser, html_path, pdf_path, max_pages=None, fixed_page=False, fonts=()):
+    """Print a page to PDF; paper size and margins come from the page's own CSS.
+
+    `fonts` lists CSS font shorthands that must be loaded, so that a font that failed
+    to download (Google Fonts needs the network) stops the build instead of being replaced.
+    """
     # Scale factor 2, as the former Puppeteer script used: with system fonts, Chromium
     # places text baselines one pixel differently at scale factor 1.
     context = browser.new_context(color_scheme="light", device_scale_factor=2)
     page = context.new_page()
     page.goto(html_path.as_uri(), wait_until="networkidle")
     page.evaluate("() => document.fonts.ready.then(() => true)")
+    missing = [font for font in fonts if not page.evaluate("f => document.fonts.check(f)", font)]
+    if missing:
+        sys.exit(f"\nError: {html_path.name}: font(s) not loaded: {', '.join(missing)}. Check the network connection.")
     if fixed_page:
         # The designed CV is one fixed A4 page: content past its bottom edge would be cut off silently.
         page.emulate_media(media="print")
@@ -226,7 +233,8 @@ def main():
     outputs = [page]
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        outputs.append(print_pdf(browser, page, ROOT / "cv" / "cv-nicolas-bailliet.pdf", max_pages=1, fixed_page=True))
+        outputs.append(print_pdf(browser, page, ROOT / "cv" / "cv-nicolas-bailliet.pdf", max_pages=1, fixed_page=True,
+                                 fonts=("800 26px 'Schibsted Grotesk'", "500 10px 'IBM Plex Mono'")))
         outputs.append(print_pdf(browser, letter, ROOT / "cv" / "cv-nicolas-bailliet-us-letter.pdf", max_pages=1))
         outputs.append(print_pdf(browser, ats, LOCAL / "cv-nicolas-bailliet-ats.pdf"))
         outputs.append(make_share_image(browser, env, page, ROOT / "figures" / "og-cv.png"))
