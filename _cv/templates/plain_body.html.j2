@@ -1,64 +1,67 @@
 {# Body of the plain CV. The order of this file is the reading order of the PDF. #}
+{% macro place(entry) %}{{ [entry.location, entry.country] | select | join(', ') }}{% endmacro %}
 <div class="plain-cv">
-    <h1>{{ cv.identity.name }}</h1>
-    <p class="contact">
-        <a href="mailto:{{ cv.identity.email }}">{{ cv.identity.email }}</a>
-        {% if cv.identity.phone %}
-        | {{ cv.identity.phone }}
-        {% endif %}
-        | {{ cv.identity.location }}
-        {% for link in cv.identity.links %}
-        | <a href="{{ link.url }}">{{ link.url | bare_url }}</a>
-        {% endfor %}
-    </p>
+    <header class="plain-header">
+        <h1>{{ cv.identity.name }}</h1>
+        <p>{{ [cv.identity.phone] | select | join }}{% if cv.identity.phone %} | {% endif %}<a href="mailto:{{ cv.identity.email }}">{{ cv.identity.email }}</a> | {{ cv.identity.location }}</p>
+        {# The portfolio comes first on this line. #}
+        {% set links = (cv.identity.links | selectattr('id', 'equalto', 'portfolio') | list) + (cv.identity.links | rejectattr('id', 'equalto', 'portfolio') | list) %}
+        <p>{% for link in links %}<a href="{{ link.url }}">{{ link.url | bare_url }}</a>{% if not loop.last %} | {% endif %}{% endfor %}</p>
+        <p class="seeking">{{ cv.availability.seeking }} · {{ cv.availability.mobility }}</p>
+    </header>
 
     {% for section in cv.sections %}
-    <h2>{{ section.plain_title or section.title }}</h2>
-    {% if section.text %}
-    <p>{{ section.text | plain }}</p>
-    {% if loop.first %}
-    <p>{{ cv.availability.seeking }} · {{ cv.availability.location_note }}</p>
-    {% endif %}
-    {% endif %}
-    {% for entry in section.entries %}
-    <h3>{{ entry.title }}</h3>
-    {% set where = [entry.organization, entry.location] | select | join(', ') %}
-    {% set when = dates(entry.start, entry.end) if entry.start else '' %}
-    {% if where or when %}
-    <p>{{ [where, when] | select | join(' | ') }}</p>
-    {% endif %}
-    {% if entry.links %}
-    <p>
-        {% for link in entry.links %}
-        {{ link.label }}: <a href="{{ link.url }}">{{ link.display }}</a>{% if not loop.last %} |{% endif %}
-
-        {% endfor %}
-    </p>
-    {% endif %}
-    {% if entry.metrics %}
-    <p>{{ entry.metrics | join(' | ') }}</p>
-    {% endif %}
-    {% if entry.tech %}
-    <p>Technologies: {{ entry.tech | join(', ') }}</p>
-    {% endif %}
-    {% if entry.description %}
-    <p>{{ entry.description | plain }}</p>
-    {% endif %}
-    {% if entry.bullets %}
-    <ul>
-        {% for bullet in entry.bullets %}
-        <li>{{ bullet | plain }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
-
-    <h2>Skills</h2>
-    {% for group in cv.skills %}
-    <p><strong>{{ group.category }}:</strong> {% for item in group['items'] %}{{ item.name if item is mapping else item }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+    <section>
+        <h2>{{ section.plain_title or section.title }}</h2>
+        {% if section.text %}
+        <p class="justify">{{ section.text | plain }}</p>
+        {% endif %}
+        {% if section.entries %}
+        <div class="p-entries">
+            {% for entry in section.entries %}
+            <div class="p-entry">
+                {% if section.style == 'projects' %}
+                <div class="row"><strong>{{ entry.title }}</strong>{% if entry.links %}<span>{% for link in entry.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} | {% endif %}{% endfor %}</span>{% endif %}</div>
+                {% if entry.tech %}
+                <div class="italic">{{ entry.tech | join(', ') }}</div>
+                {% endif %}
+                {% if entry.metrics %}
+                <div>{{ entry.metrics | join(' | ') }}</div>
+                {% endif %}
+                {% if not entry.bullets and entry.description %}
+                <p class="justify">{{ entry.description | plain }}</p>
+                {% endif %}
+                {% else %}
+                <div class="row"><strong>{{ entry.school or entry.title }}</strong>{% if entry.start %}<span>{{ dates(entry.start, entry.end) }}</span>{% endif %}</div>
+                {% set subtitle = entry.degree or ([entry.organization, entry.tech | join(', ') if entry.tech else ''] | select | join(' · ')) %}
+                {% if subtitle or place(entry) %}
+                <div class="row italic"><span class="subtitle">{{ subtitle }}</span>{% if place(entry) %}<span>{{ place(entry) }}</span>{% endif %}</div>
+                {% endif %}
+                {% if entry.description %}
+                <p>{% if section.description_label %}{{ section.description_label }}: {% endif %}{{ entry.description | plain }}</p>
+                {% endif %}
+                {% endif %}
+                {% if entry.bullets %}
+                <ul>
+                    {% for bullet in entry.bullets %}
+                    <li>{{ bullet | plain }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
     {% endfor %}
 
-    <h2>Languages</h2>
-    <p>{% for language in cv.languages %}{{ language.name }}: {{ language.level }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+    <section>
+        <h2>Skills</h2>
+        <div class="skills">
+            {% for group in cv.skills %}
+            <p><strong>{{ group.category }}:</strong> {% for item in group['items'] %}{{ item.name if item is mapping else item }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+            {% endfor %}
+            <p><strong>Languages:</strong> {% for language in cv.languages %}{{ language.name }} ({{ language.level | lower }}){% if not loop.last %}, {% endif %}{% endfor %}</p>
+        </div>
+    </section>
 </div>

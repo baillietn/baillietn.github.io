@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <title>{{ cv.identity.name }} - CV</title>
     <style>
+        /* Page margins of the CVLetter mockup (816 x 1056 px sheet, padding 44 54 40). */
         @page {
             size: {{ paper }};
-            margin: 12.7mm;
+            margin: 44px 54px 40px;
         }
 
         body {
             margin: 0;
+            color: #111111;
         }
 
         {% filter indent(8) %}

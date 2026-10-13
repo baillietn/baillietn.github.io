@@ -223,11 +223,11 @@ def main():
 
     def plain_page(version, paper):
         return write(LOCAL / f"{version}.html", env.get_template("plain.html.j2").render(
-            cv=cv, paper=paper, body=plain_body(version)))
+            cv=cv, paper=paper, body=plain_body(version), font_dir=(ROOT / "cv" / "fonts").as_uri()))
 
     # The CV page shows the designed CV and embeds the US Letter one as a preview.
     page = write(ROOT / "cv" / "index.html", env.get_template("design.html.j2").render(
-        cv=select(cv, "design"), dates=design_dates, letter_body=plain_body("letter")))
+        cv=select(cv, "design"), dates=design_dates, letter_body=plain_body("letter"), font_dir="fonts"))
     letter, ats = plain_page("letter", "Letter"), plain_page("ats", "A4")
 
     outputs = [page]
@@ -235,8 +235,9 @@ def main():
         browser = p.chromium.launch()
         outputs.append(print_pdf(browser, page, ROOT / "cv" / "cv-nicolas-bailliet.pdf", max_pages=1, fixed_page=True,
                                  fonts=("800 26px 'Schibsted Grotesk'", "500 10px 'IBM Plex Mono'")))
-        outputs.append(print_pdf(browser, letter, ROOT / "cv" / "cv-nicolas-bailliet-us-letter.pdf", max_pages=1))
-        outputs.append(print_pdf(browser, ats, LOCAL / "cv-nicolas-bailliet-ats.pdf"))
+        cmu = ("400 14px 'CMU Serif'", "700 14px 'CMU Serif'", "italic 400 14px 'CMU Serif'")
+        outputs.append(print_pdf(browser, letter, ROOT / "cv" / "cv-nicolas-bailliet-us-letter.pdf", max_pages=1, fonts=cmu))
+        outputs.append(print_pdf(browser, ats, LOCAL / "cv-nicolas-bailliet-ats.pdf", fonts=cmu))
         outputs.append(make_share_image(browser, env, page, ROOT / "figures" / "og-cv.png"))
         browser.close()
 

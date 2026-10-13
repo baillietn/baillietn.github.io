@@ -16,7 +16,8 @@
 #     entries:                     # a list of entries ...
 #       - title: "..."             #   (all fields but `title` are optional)
 #         organization: "..."
-#         location: "..."
+#         location: "..."            # city
+#         country: "..."             # shown after the city in the plain versions
 #         start: "2026-01"
 #         end: present
 #         tech: [Python, PyTorch]
@@ -26,6 +27,12 @@
 #
 #   - title: About me
 #     text: "..."                  # ... or a paragraph instead of entries
+#
+# An education entry gives `degree` and `school` instead of `title`: the designed CV shows
+# "degree — school", the plain versions put the school first and the degree below.
+# `description_label` on a section prefixes its descriptions in the plain versions
+# ("Coursework: ..."). On a project, `bullets` are used by the plain versions and
+# `description` by the designed CV.
 #
 # `style: projects` on a section renders its entries as project cards (name, links,
 # metrics, tech, description) instead of dated entries.
@@ -62,7 +69,8 @@ identity:
 availability:
   badge: "Open to internship abroad · March 2027"
   seeking: "Seeking a 6-month internship outside France from mid-March 2027"
-  location_note: "Based in Paris · Open to relocation · EU citizen"
+  based_in: "Based in Paris"
+  mobility: "Open to relocation · EU citizen"
   focus: "LLM engineering & agentic systems, MLOps, model fine-tuning"
 
 sections:
@@ -83,6 +91,7 @@ sections:
       - title: "Research Engineer Intern — Optimal Control & Scientific Computing"
         organization: IRIT / ENSEEIHT
         location: Toulouse
+        country: France
         start: "2025-06"
         end: "2025-08"
         tech: [Julia, JuMP]
@@ -108,12 +117,19 @@ sections:
             critical bugs.
 
   - title: Education
+    description_label: Coursework
     entries:
-      - title: "Computer Science & Engineering — ENSEEIHT (INP Toulouse)"
+      - degree: "Computer Science & Engineering"
+        school: "ENSEEIHT (INP Toulouse)"
+        location: Toulouse
+        country: France
         start: "2023-09"
         end: present
         description: "ML algorithms, numerical methods, optimization, HPC, big data systems."
-      - title: "Preparatory School, Maths & Physics — Lycée Chaptal, Paris"
+      - degree: "Preparatory School, Maths & Physics"
+        school: "Lycée Chaptal"
+        location: Paris
+        country: France
         start: "2020-09"
         end: "2023-07"
         description: "Linear algebra, real analysis, probability theory, differential equations."
@@ -145,6 +161,18 @@ sections:
           tokens (SmolTalk). Loss landscape visualization via PCA on
           checkpoints. Deployed as Base & Chat variants (BF16 + FP8) on
           HuggingFace Hub with streaming chatbot interface.
+        bullets:
+          - >-
+            Two decoder-only transformers built entirely from scratch. 30-layer
+            architecture: GQA (9Q/3KV heads), RoPE, SwiGLU; custom BPE
+            tokenizer (49K vocab).
+          - >-
+            4-stage curriculum pre-training (FineWeb-Edu, Python-Edu, FineMath,
+            Cosmopedia-v2) + SFT on 100M conversational tokens (SmolTalk).
+          - "Loss landscape visualization via PCA on checkpoints."
+          - >-
+            Deployed as Base & Chat variants (BF16 + FP8) on HuggingFace Hub
+            with a streaming chatbot interface.
       - title: "Soprasteria–ENSEEIHT · Water Quality IBD Prediction"
         hide_in: [letter]
         tech: [Python, TensorFlow/Keras, scikit-learn, pandas]

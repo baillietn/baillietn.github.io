@@ -1,7 +1,37 @@
-/* Plain single-column CV: the US Letter version and the local ATS version.
-   One text flow in reading order: no images, tables, columns or positioned boxes.
-   No text-transform and no letter-spacing: both change the text a parser extracts.
+/* Plain single-column CV, LaTeX style: the US Letter version, the local ATS version and
+   the US Letter preview on the CV page. Values from the CVLetter mockup.
+   ATS rules: one text flow in reading order, no images, tables or absolute positioning;
+   no text-transform and no letter-spacing (both change the text a parser extracts);
+   text bullets, so that extracted text still shows where each item starts.
    Everything is scoped to .plain-cv so the same rules style the preview on the CV page. */
+
+@font-face {
+    font-family: 'CMU Serif';
+    src: url('{{ font_dir }}/cmunrm.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Serif';
+    src: url('{{ font_dir }}/cmunbx.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CMU Serif';
+    src: url('{{ font_dir }}/cmunti.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'CMU Serif';
+    src: url('{{ font_dir }}/cmunbi.woff2') format('woff2');
+    font-weight: 700;
+    font-style: italic;
+}
 
 .plain-cv,
 .plain-cv * {
@@ -11,66 +41,105 @@
 }
 
 .plain-cv {
-    font-family: Arial, 'Liberation Sans', Helvetica, sans-serif;
-    font-size: 10pt;
-    line-height: 1.32;
+    font-family: 'CMU Serif', 'Latin Modern Roman', 'Computer Modern', Georgia, serif;
+    font-size: 14px;
+    line-height: 1.28;
     font-variant-ligatures: none;
     hyphens: manual;
     text-align: left;
-}
-
-.plain-cv h1 {
-    font-size: 18pt;
-    line-height: 1.15;
-}
-
-.plain-cv .contact {
-    margin-top: 2pt;
-    text-wrap: balance;
-}
-
-.plain-cv h2 {
-    font-size: 12pt;
-    margin-top: 9pt;
-    margin-bottom: 4pt;
-    padding-bottom: 1pt;
-    border-bottom: 0.75pt solid currentColor;
-    break-after: avoid;
-}
-
-.plain-cv h3 {
-    font-size: 10.5pt;
-    margin-top: 6pt;
-    break-after: avoid;
-}
-
-.plain-cv h2 + h3 {
-    margin-top: 0;
-}
-
-.plain-cv p + p {
-    margin-top: 1pt;
-}
-
-/* A text bullet, not the browser's drawn disc: it survives text extraction,
-   so a parser can still tell where each item starts. */
-.plain-cv ul {
-    padding-left: 11pt;
-    list-style-type: "•  ";
-}
-
-.plain-cv li {
-    margin-top: 1pt;
-}
-
-.plain-cv p,
-.plain-cv li {
-    break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .plain-cv a {
     color: inherit;
-    text-decoration: none;
+}
+
+.plain-cv .plain-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-align: center;
+}
+
+.plain-cv h1 {
+    margin-bottom: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.plain-cv .plain-header p {
+    font-size: 13px;
+}
+
+.plain-cv .plain-header .seeking {
+    margin-top: 3px;
+    font-style: italic;
+}
+
+.plain-cv section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.plain-cv h2 {
+    padding-bottom: 1px;
+    border-bottom: 1px solid currentColor;
+    font-size: 16px;
+    font-weight: 700;
+    break-after: avoid;
+}
+
+.plain-cv .justify {
+    text-align: justify;
+}
+
+.plain-cv .p-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.plain-cv .p-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    break-inside: avoid;
+}
+
+/* Title on the left, dates (or links) on the right; same for the italic line below. */
+.plain-cv .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.plain-cv .row > span {
+    flex: none;
+}
+
+.plain-cv .italic {
+    font-style: italic;
+}
+
+.plain-cv ul {
+    margin-top: 3px;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: justify;
+    list-style-type: "•  ";
+}
+
+.plain-cv .skills {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 /* Set by the generator around hyphenated words, so they never break across lines:
