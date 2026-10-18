@@ -2,24 +2,26 @@
 #
 # Text fields accept **bold**; no HTML, no LaTeX. Dates are "YYYY-MM" or "present".
 #
-# Versions: `design` (the CV page and its A4 PDF), `letter` (plain one-page US Letter PDF,
-# published) and `ats` (plain A4 PDF with everything, local only).
-# `hide_in: [letter]` on an entry, a skill, a link or a whole section leaves it out of a
-# version. A bullet that needs it is written as:
+# Versions, one page each: `design-a4` (the CV page and its A4 PDF), `classic-a4` and
+# `classic-letter` (the sober one-column CV, in A4 and US Letter).
+# `hide_in: [classic]` on an item leaves it out of both Classic versions; a version name
+# (`design-a4`, `classic-a4`, `classic-letter`) targets one version only. It works on an
+# entry, a bullet, a skill, a link, a section or an availability detail. A bullet that
+# needs it is written as:
 #       - text: "..."
-#         hide_in: [letter]
+#         hide_in: [classic]
 #
 # `sections` is the main column, in order. To add a section, add an item to the list:
 #
 #   - title: Publications          # heading
-#     plain_title: Publications    # optional: another heading in the plain versions
+#     classic_title: Publications  # optional: another heading in the Classic versions
 #     entries:                     # a list of entries ...
 #       - title: "..."             #   (all fields but `title` are optional)
 #         organization: "..."
 #         location: "..."            # city
-#         country: "..."             # shown after the city in the plain versions
+#         country: "..."             # shown after the city in the Classic versions
 #         start: "2026-01"
-#         end: present
+#         end: present               # or "YYYY-MM"; add `expected: true` for a future end
 #         tech: [Python, PyTorch]
 #         description: "..."
 #         bullets:
@@ -27,12 +29,12 @@
 #
 #   - title: About me
 #     text: "..."                  # ... or a paragraph instead of entries
+#     classic_text: "..."          # optional: another paragraph in the Classic versions
 #
 # An education entry gives `degree` and `school` instead of `title`: the designed CV shows
-# "degree — school", the plain versions put the school first and the degree below.
-# `description_label` on a section prefixes its descriptions in the plain versions
-# ("Coursework: ..."). On a project, `bullets` are used by the plain versions and
-# `description` by the designed CV.
+# "degree — school", the Classic versions put the school first and the degree below.
+# On a project, `bullets` are used by the Classic versions and `description` by the
+# designed CV.
 #
 # `style: projects` on a section renders its entries as project cards (name, links,
 # metrics, tech, description) instead of dated entries.
@@ -67,26 +69,37 @@ identity:
       url: https://baillietn.github.io
 
 availability:
-  badge: "Open to internship abroad · March 2027"
-  seeking: "Seeking a 6-month internship outside France from mid-March 2027"
-  based_in: "Based in Paris"
-  mobility: "Open to relocation · EU citizen"
+  badge: "Open to internship · March 2027"
+  seeking: "Seeking a 6-month end-of-studies internship from mid-March 2027"
+  # Joined after `seeking` with " · ".
+  details:
+    - text: Based in Paris
+      hide_in: [classic]           # the city is already in the Classic contact line
+    - Open to relocation
+    - text: EU citizen
+      hide_in: [classic-letter]
   focus: "LLM engineering & agentic systems, MLOps, model fine-tuning"
 
 sections:
   - title: Professional Profile
-    plain_title: Summary
+    classic_title: Summary
     text: >-
-      Third-year Computer Science student at ENSEEIHT, with a background in
-      mathematics and numerical optimization. I train language models
-      **from scratch, on a single desktop GPU**. My latest, **HilbertLM**, was
-      written end to end: custom tokenizer, pre-training, fine-tuning, then a
-      live chatbot anyone can talk to. Now I want to build and deploy
-      **LLM and agentic systems** in production, and **fine-tune models** for
-      the teams that use them.
+      Final-year Master's student in Computer Science at ENSEEIHT, with a
+      background in mathematics and numerical optimization. Built **HilbertLM**
+      end to end **on a single desktop GPU**: custom tokenizer, pre-training on
+      20B tokens, fine-tuning and a live chatbot. Looking to build and deploy
+      **LLM and agentic systems** in production, and to **fine-tune models**
+      for the teams that use them.
+    # Shorter text for the Classic versions, where the summary must stay within 3 lines.
+    classic_text: >-
+      Final-year Master's student in Computer Science at ENSEEIHT, with a
+      background in mathematics and optimization. Built HilbertLM end to end on
+      a single desktop GPU: tokenizer, pre-training on 20B tokens, fine-tuning,
+      live chatbot. Looking to build, deploy and fine-tune LLM and agentic
+      systems in production.
 
   - title: Professional Experience
-    plain_title: Experience
+    classic_title: Experience
     entries:
       - title: "Research Engineer Intern — Optimal Control & Scientific Computing"
         organization: IRIT / ENSEEIHT
@@ -96,10 +109,11 @@ sections:
         end: "2025-08"
         tech: [Julia, JuMP]
         bullets:
-          - >-
-            Enhanced and validated an open-source Julia optimal-control solver
-            library, across two axes: software maintenance (bug fixing) and
-            numerical validation.
+          - text: >-
+              Enhanced and validated an open-source Julia optimal-control solver
+              library, across two axes: software maintenance (bug fixing) and
+              numerical validation.
+            hide_in: [classic]
           - >-
             Built an automated benchmark looping over 15 control problems:
             convergence checks for both the solver and JuMP (reference Julia
@@ -110,29 +124,33 @@ sections:
               Investigated an Earth-to-Moon transfer modeled as the Restricted
               Three-Body Problem (CR3BP); implemented regularization to smooth
               singularities and scoped solver limitations for future work.
-            hide_in: [letter]
+            hide_in: [classic]
           - >-
             Contributed unit tests & API documentation via GitHub (commits,
             Pull Requests, peer reviews), positive team feedback for surfacing
             critical bugs.
 
   - title: Education
-    description_label: Coursework
     entries:
-      - degree: "Computer Science & Engineering"
+      - degree: "Diplôme d'Ingénieur (MSc equivalent), Computer Science & Engineering"
         school: "ENSEEIHT (INP Toulouse)"
         location: Toulouse
         country: France
         start: "2023-09"
-        end: present
-        description: "ML algorithms, numerical methods, optimization, HPC, big data systems."
-      - degree: "Preparatory School, Maths & Physics"
+        end: "2027-09"
+        expected: true
+        description: >-
+          ML algorithms, numerical methods, optimization, HPC, big data systems.
+          Includes a required 6-month end-of-studies internship.
+      - degree: "Classes Préparatoires (CPGE), Mathematics & Physics"
         school: "Lycée Chaptal"
         location: Paris
         country: France
         start: "2020-09"
         end: "2023-07"
-        description: "Linear algebra, real analysis, probability theory, differential equations."
+        description: >-
+          Intensive undergraduate program in mathematics and physics, preparing
+          for the competitive entrance exams to French engineering schools.
 
   - title: Projects
     style: projects
@@ -142,7 +160,7 @@ sections:
         links:
           - label: Live demo
             url: https://baillietn.github.io/HilbertLM-Lab/
-            display: baillietn.github.io/HilbertLM-Lab/
+            display: baillietn.github.io/HilbertLM-Lab
           - label: HuggingFace
             url: https://huggingface.co/collections/baillietn/hilbertlm
             display: huggingface.co/collections/baillietn/hilbertlm
@@ -169,32 +187,32 @@ sections:
           - >-
             4-stage curriculum pre-training (FineWeb-Edu, Python-Edu, FineMath,
             Cosmopedia-v2) + SFT on 100M conversational tokens (SmolTalk).
-          - "Loss landscape visualization via PCA on checkpoints."
+          - text: "Loss landscape visualization via PCA on checkpoints."
+            hide_in: [classic]
           - >-
             Deployed as Base & Chat variants (BF16 + FP8) on HuggingFace Hub
             with a streaming chatbot interface.
       - title: "Soprasteria–ENSEEIHT · Water Quality IBD Prediction"
-        hide_in: [letter]
         tech: [Python, TensorFlow/Keras, scikit-learn, pandas]
         description: >-
           Neural network predicting Biological Diatom Index for river ecosystem
           monitoring. 70+ environmental features from Naïades DB (2000–2025);
           BatchNorm & Dropout; anomaly detection & feature importance analysis.
       - title: "ENM–ENSEEIHT · Deep Learning Practical Modules"
-        hide_in: [letter]
+        hide_in: [classic]
         tech: [Python, PyTorch, Jupyter]
         description: >-
           Completed 8 progressive ML modules covering: NN fundamentals, CNNs,
           attention mechanisms, transformers, semantic segmentation, GANs/WGAN,
           quantile regression, learning-to-rank (RankNet + curriculum learning).
       - title: "Stochastic Filtering & Data Assimilation"
-        hide_in: [letter]
+        hide_in: [classic]
         tech: [Python, JAX, Flax, NumPy]
         description: >-
           4 notebooks: Kalman Filter, Ensemble Kalman Filter (Lorenz dynamics),
           score-based diffusion models (JAX/Flax), PageRank via Markov chains.
       - title: "Optimal Control — Course Materials & Orbital Transfer"
-        hide_in: [letter]
+        hide_in: [classic]
         tech: [Julia, DifferentialEquations.jl, NLsolve.jl, ForwardDiff.jl]
         description: >-
           6 practical modules: ODEs, shooting methods, MPC, automatic
@@ -217,7 +235,7 @@ skills:
       - name: "Inference & deployment (HF)"
         level: Intermediate
   - category: "Numerical & Optimization"
-    hide_in: [letter]
+    hide_in: [classic]
     items:
       - name: "Numerical optimization (constrained)"
         level: Advanced

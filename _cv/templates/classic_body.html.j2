@@ -1,44 +1,48 @@
-{# Body of the plain CV. The order of this file is the reading order of the PDF. #}
+{# Body of the Classic CV. The order of this file is the reading order of the PDF. #}
 {% macro place(entry) %}{{ [entry.location, entry.country] | select | join(', ') }}{% endmacro %}
-<div class="plain-cv">
-    <header class="plain-header">
+<div class="classic-cv">
+    <header class="classic-header">
         <h1>{{ cv.identity.name }}</h1>
         <p>{{ [cv.identity.phone] | select | join }}{% if cv.identity.phone %} | {% endif %}<a href="mailto:{{ cv.identity.email }}">{{ cv.identity.email }}</a> | {{ cv.identity.location }}</p>
         {# The portfolio comes first on this line. #}
         {% set links = (cv.identity.links | selectattr('id', 'equalto', 'portfolio') | list) + (cv.identity.links | rejectattr('id', 'equalto', 'portfolio') | list) %}
         <p>{% for link in links %}<a href="{{ link.url }}">{{ link.url | bare_url }}</a>{% if not loop.last %} | {% endif %}{% endfor %}</p>
-        <p class="seeking">{{ cv.availability.seeking }} · {{ cv.availability.mobility }}</p>
+        <p class="seeking">{{ ([cv.availability.seeking] + cv.availability.details) | join(' · ') }}</p>
     </header>
 
     {% for section in cv.sections %}
     <section>
-        <h2>{{ section.plain_title or section.title }}</h2>
+        <h2>{{ section.classic_title or section.title }}</h2>
         {% if section.text %}
-        <p class="justify">{{ section.text | plain }}</p>
+        <p class="justify">{{ (section.classic_text or section.text) | plain }}</p>
         {% endif %}
         {% if section.entries %}
-        <div class="p-entries">
+        <div class="c-entries">
             {% for entry in section.entries %}
-            <div class="p-entry">
+            <div class="c-entry">
                 {% if section.style == 'projects' %}
-                <div class="row"><strong>{{ entry.title }}</strong>{% if entry.links %}<span>{% for link in entry.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} | {% endif %}{% endfor %}</span>{% endif %}</div>
+                <div class="row"><strong>{{ entry.title }}</strong></div>
+                {% if entry.links %}
+                {# Links written out in full: readable on paper, and still clickable. #}
+                <div>{% for link in entry.links %}<a href="{{ link.url }}">{{ link.display }}</a>{% if not loop.last %} | {% endif %}{% endfor %}</div>
+                {% endif %}
                 {% if entry.tech %}
                 <div class="italic">{{ entry.tech | join(', ') }}</div>
                 {% endif %}
                 {% if entry.metrics %}
-                <div>{{ entry.metrics | join(' | ') }}</div>
+                <div>{% for metric in entry.metrics %}<span class="nobreak">{{ metric }}</span>{% if not loop.last %} | {% endif %}{% endfor %}</div>
                 {% endif %}
                 {% if not entry.bullets and entry.description %}
                 <p class="justify">{{ entry.description | plain }}</p>
                 {% endif %}
                 {% else %}
-                <div class="row"><strong>{{ entry.school or entry.title }}</strong>{% if entry.start %}<span>{{ dates(entry.start, entry.end) }}</span>{% endif %}</div>
+                <div class="row"><strong>{{ entry.school or entry.title }}</strong>{% if entry.start %}<span>{{ dates(entry.start, entry.end, entry.expected) }}</span>{% endif %}</div>
                 {% set subtitle = entry.degree or ([entry.organization, entry.tech | join(', ') if entry.tech else ''] | select | join(' · ')) %}
                 {% if subtitle or place(entry) %}
                 <div class="row italic"><span class="subtitle">{{ subtitle }}</span>{% if place(entry) %}<span>{{ place(entry) }}</span>{% endif %}</div>
                 {% endif %}
                 {% if entry.description %}
-                <p>{% if section.description_label %}{{ section.description_label }}: {% endif %}{{ entry.description | plain }}</p>
+                <p>{{ entry.description | plain }}</p>
                 {% endif %}
                 {% endif %}
                 {% if entry.bullets %}

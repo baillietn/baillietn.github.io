@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>{{ cv.identity.name }} - CV</title>
     <style>
-        /* Page margins of the CVLetter mockup (816 x 1056 px sheet, padding 44 54 40). */
+        /* Page margins of the CVLetter mockup (816 x 1056 px sheet, padding 44 54 40), for both papers. */
         @page {
             size: {{ paper }};
             margin: 44px 54px 40px;
@@ -17,7 +17,7 @@
         }
 
         {% filter indent(8) %}
-        {% include 'plain.css' %}
+        {% include 'classic.css' %}
         {% endfilter %}
     </style>
 </head>

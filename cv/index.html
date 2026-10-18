@@ -17,14 +17,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
     <style>
-/* Plain single-column CV, LaTeX style: the US Letter version, the local ATS version and
-           the US Letter preview on the CV page. Values from the CVLetter mockup.
-           ATS rules: one text flow in reading order, no images, tables or absolute positioning;
-           no text-transform and no letter-spacing (both change the text a parser extracts);
-           text bullets, so that extracted text still shows where each item starts.
-           Everything is scoped to .plain-cv so the same rules style the preview on the CV page. */
+/* Classic CV: sober single column, LaTeX style, in A4 and US Letter, and its preview on the
+           CV page. Values from the CVLetter mockup.
+           It must stay readable by applicant tracking systems: one text flow in reading order, no
+           images, tables or absolute positioning; no text-transform and no letter-spacing (both
+           change the text a parser extracts); text bullets, so that extracted text still shows
+           where each item starts. Everything is scoped to .classic-cv. */
 
         @font-face {
             font-family: 'CMU Serif';
@@ -54,14 +54,14 @@
             font-style: italic;
         }
 
-        .plain-cv,
-        .plain-cv * {
+        .classic-cv,
+        .classic-cv * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        .plain-cv {
+        .classic-cv {
             font-family: 'CMU Serif', 'Latin Modern Roman', 'Computer Modern', Georgia, serif;
             font-size: 14px;
             line-height: 1.28;
@@ -73,11 +73,11 @@
             gap: 10px;
         }
 
-        .plain-cv a {
+        .classic-cv a {
             color: inherit;
         }
 
-        .plain-cv .plain-header {
+        .classic-cv .classic-header {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -85,29 +85,29 @@
             text-align: center;
         }
 
-        .plain-cv h1 {
+        .classic-cv h1 {
             margin-bottom: 3px;
             font-size: 34px;
             font-weight: 400;
             line-height: 1.1;
         }
 
-        .plain-cv .plain-header p {
+        .classic-cv .classic-header p {
             font-size: 13px;
         }
 
-        .plain-cv .plain-header .seeking {
+        .classic-cv .classic-header .seeking {
             margin-top: 3px;
             font-style: italic;
         }
 
-        .plain-cv section {
+        .classic-cv section {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
 
-        .plain-cv h2 {
+        .classic-cv h2 {
             padding-bottom: 1px;
             border-bottom: 1px solid currentColor;
             font-size: 16px;
@@ -115,17 +115,17 @@
             break-after: avoid;
         }
 
-        .plain-cv .justify {
+        .classic-cv .justify {
             text-align: justify;
         }
 
-        .plain-cv .p-entries {
+        .classic-cv .c-entries {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .plain-cv .p-entry {
+        .classic-cv .c-entry {
             display: flex;
             flex-direction: column;
             gap: 1px;
@@ -133,21 +133,21 @@
         }
 
         /* Title on the left, dates (or links) on the right; same for the italic line below. */
-        .plain-cv .row {
+        .classic-cv .row {
             display: flex;
             justify-content: space-between;
             gap: 16px;
         }
 
-        .plain-cv .row > span {
+        .classic-cv .row > span {
             flex: none;
         }
 
-        .plain-cv .italic {
+        .classic-cv .italic {
             font-style: italic;
         }
 
-        .plain-cv ul {
+        .classic-cv ul {
             margin-top: 3px;
             padding-left: 18px;
             display: flex;
@@ -157,7 +157,7 @@
             list-style-type: "•  ";
         }
 
-        .plain-cv .skills {
+        .classic-cv .skills {
             display: flex;
             flex-direction: column;
             gap: 2px;
@@ -165,7 +165,7 @@
 
         /* Set by the generator around hyphenated words, so they never break across lines:
            text extractors glue them back without the hyphen. */
-        .plain-cv .nobreak {
+        .classic-cv .nobreak {
             white-space: nowrap;
         }
     </style>
@@ -189,9 +189,13 @@
             </svg>
         </a>
         <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
-        <div class="view-switch" role="group" aria-label="CV version">
-            <button class="view-option" data-view="design" onclick="setView('design')">Design</button>
-            <button class="view-option" data-view="letter" onclick="setView('letter')">US Letter</button>
+        <div class="view-switch style-switch" role="group" aria-label="CV style">
+            <button class="view-option" data-style="design" onclick="setStyle('design')">Design</button>
+            <button class="view-option" data-style="classic" onclick="setStyle('classic')">Classic</button>
+        </div>
+        <div class="view-switch paper-switch" role="group" aria-label="Paper size">
+            <button class="view-option" data-paper="a4" onclick="setPaper('a4')">A4</button>
+            <button class="view-option" data-paper="letter" onclick="setPaper('letter')">US Letter</button>
         </div>
     </div>
 
@@ -201,7 +205,7 @@
         <aside class="sidebar">
             <img class="cv-photo" src="../figures/Nicolas.jpg" alt="Nicolas Bailliet">
 
-            <p class="side-pill"><span aria-hidden="true" class="dot"></span>Open to internship abroad · March 2027</p>
+            <p class="side-pill"><span aria-hidden="true" class="dot"></span>Open to internship · March 2027</p>
 
             <section class="side-section">
                 <h2>Contact</h2>
@@ -216,7 +220,7 @@
 <a href="https://github.com/baillietn">github.com/baillietn</a></li>
                     <li>    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg>
 <a href="https://linkedin.com/in/nbailliet">linkedin.com/in/nbailliet</a></li>
-                    <li>    <span aria-hidden="true" class="hf-badge">HF</span>
+                    <li>    <span aria-hidden="true" class="hf-icon">🤗</span>
 <a href="https://huggingface.co/baillietn">hf.co/baillietn</a></li>
                     <li>    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
 <a href="https://baillietn.github.io">baillietn.github.io</a></li>
@@ -298,14 +302,14 @@
                 <h1>Nicolas Bailliet</h1>
                 <p class="cv-role">LLM engineer</p>
                 <div class="cv-pills">
-                    <p class="cv-pill"><span aria-hidden="true" class="dot"></span>Seeking a 6-month internship outside France from mid-March 2027 · Based in Paris · Open to relocation · EU citizen</p>
+                    <p class="cv-pill"><span aria-hidden="true" class="dot"></span>Seeking a 6-month end-of-studies internship from mid-March 2027 · Based in Paris · Open to relocation · EU citizen</p>
                     <p class="cv-pill"><span aria-hidden="true" class="dot"></span>LLM engineering &amp; agentic systems, MLOps, model fine-tuning</p>
                 </div>
             </header>
 
             <section class="cv-section">
                 <h2>Professional Profile</h2>
-                <p class="cv-profile">Third-year Computer Science student at ENSEEIHT, with a background in mathematics and numerical optimization. I train language models <strong>from scratch, on a single desktop GPU</strong>. My latest, <strong>HilbertLM</strong>, was written end to end: custom tokenizer, pre-training, fine-tuning, then a live chatbot anyone can talk to. Now I want to build and deploy <strong>LLM and agentic systems</strong> in production, and <strong>fine-tune models</strong> for the teams that use them.</p>
+                <p class="cv-profile">Final-year Master&#39;s student in Computer Science at ENSEEIHT, with a background in mathematics and numerical optimization. Built <strong>HilbertLM</strong> end to end <strong>on a single desktop GPU</strong>: custom tokenizer, pre-training on 20B tokens, fine-tuning and a live chatbot. Looking to build and deploy <strong>LLM and agentic systems</strong> in production, and to <strong>fine-tune models</strong> for the teams that use them.</p>
 
             </section>
             <section class="cv-section">
@@ -334,17 +338,17 @@
                 <div class="entries">
                     <div class="entry">
                         <div class="entry-head">
-                            <strong>Computer Science &amp; Engineering — ENSEEIHT (INP Toulouse)</strong>
-                            <span class="entry-date">2023–Present</span>
+                            <strong>Diplôme d&#39;Ingénieur (MSc equivalent), Computer Science &amp; Engineering — ENSEEIHT (INP Toulouse)</strong>
+                            <span class="entry-date">2023–2027 (expected)</span>
                         </div>
-                        <span class="entry-desc">ML algorithms, numerical methods, optimization, HPC, big data systems.</span>
+                        <span class="entry-desc">ML algorithms, numerical methods, optimization, HPC, big data systems. Includes a required 6-month end-of-studies internship.</span>
                     </div>
                     <div class="entry">
                         <div class="entry-head">
-                            <strong>Preparatory School, Maths &amp; Physics — Lycée Chaptal, Paris</strong>
+                            <strong>Classes Préparatoires (CPGE), Mathematics &amp; Physics — Lycée Chaptal, Paris</strong>
                             <span class="entry-date">2020–2023</span>
                         </div>
-                        <span class="entry-desc">Linear algebra, real analysis, probability theory, differential equations.</span>
+                        <span class="entry-desc">Intensive undergraduate program in mathematics and physics, preparing for the competitive entrance exams to French engineering schools.</span>
                     </div>
                 </div>
             </section>
@@ -355,7 +359,7 @@
                     <div class="featured-head">
                         <strong>★ HilbertLM (135M &amp; 163M)</strong>
                         <div class="featured-links">
-                            <span><a href="https://baillietn.github.io/HilbertLM-Lab/">Live demo ↗</a> <span class="url">baillietn.github.io/HilbertLM-Lab/</span></span>
+                            <span><a href="https://baillietn.github.io/HilbertLM-Lab/">Live demo ↗</a> <span class="url">baillietn.github.io/HilbertLM-Lab</span></span>
                             <span><a href="https://huggingface.co/collections/baillietn/hilbertlm">HuggingFace ↗</a> <span class="url">huggingface.co/collections/baillietn/hilbertlm</span></span>
                         </div>
                     </div>
@@ -397,75 +401,157 @@
         </div>
     </div>
 
-    <div class="letter-sheet">
-        <div class="plain-cv">
-            <header class="plain-header">
-                <h1>Nicolas Bailliet</h1>
-                <p>+33 6 51 75 16 99 | <a href="mailto:nicolas.bailliet@etu.toulouse-inp.fr">nicolas.bailliet@etu.<span class="nobreak">toulouse-inp</span>.fr</a> | Paris, France</p>
-                <p><a href="https://baillietn.github.io">baillietn.github.io</a> | <a href="https://github.com/baillietn">github.com/baillietn</a> | <a href="https://linkedin.com/in/nbailliet">linkedin.com/in/nbailliet</a> | <a href="https://huggingface.co/baillietn">huggingface.co/baillietn</a></p>
-                <p class="seeking">Seeking a <span class="nobreak">6-month</span> internship outside France from <span class="nobreak">mid-March</span> 2027 · Open to relocation · EU citizen</p>
-            </header>
+    <div class="classic-frame" data-paper="a4">
+        <div class="classic-sheet">
+            <div class="classic-cv">
+                <header class="classic-header">
+                    <h1>Nicolas Bailliet</h1>
+                    <p>+33 6 51 75 16 99 | <a href="mailto:nicolas.bailliet@etu.toulouse-inp.fr">nicolas.bailliet@etu.<span class="nobreak">toulouse-inp</span>.fr</a> | Paris, France</p>
+                    <p><a href="https://baillietn.github.io">baillietn.github.io</a> | <a href="https://github.com/baillietn">github.com/baillietn</a> | <a href="https://linkedin.com/in/nbailliet">linkedin.com/in/nbailliet</a> | <a href="https://huggingface.co/baillietn">huggingface.co/baillietn</a></p>
+                    <p class="seeking">Seeking a <span class="nobreak">6-month</span> <span class="nobreak">end-of-studies</span> internship from <span class="nobreak">mid-March</span> 2027 · Open to relocation · EU citizen</p>
+                </header>
 
-            <section>
-                <h2>Summary</h2>
-                <p class="justify"><span class="nobreak">Third-year</span> Computer Science student at ENSEEIHT, with a background in mathematics and numerical optimization. I train language models from scratch, on a single desktop GPU. My latest, HilbertLM, was written end to end: custom tokenizer, <span class="nobreak">pre-training</span>, <span class="nobreak">fine-tuning</span>, then a live chatbot anyone can talk to. Now I want to build and deploy LLM and agentic systems in production, and <span class="nobreak">fine-tune</span> models for the teams that use them.</p>
-            </section>
-            <section>
-                <h2>Experience</h2>
-                <div class="p-entries">
-                    <div class="p-entry">
-                        <div class="row"><strong>Research Engineer Intern — Optimal Control &amp; Scientific Computing</strong><span>Jun 2025 – Aug 2025</span></div>
-                        <div class="row italic"><span class="subtitle">IRIT / ENSEEIHT · Julia, JuMP</span><span>Toulouse, France</span></div>
-                        <ul>
-                            <li>Enhanced and validated an <span class="nobreak">open-source</span> Julia <span class="nobreak">optimal-control</span> solver library, across two axes: software maintenance (bug fixing) and numerical validation.</li>
-                            <li>Built an automated benchmark looping over 15 control problems: convergence checks for both the solver and JuMP (reference Julia modeling language), initialization comparison, and relative error in the L² norm on the state x and control u between the two solvers.</li>
-                            <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer reviews), positive team feedback for surfacing critical bugs.</li>
-                        </ul>
+                <section>
+                    <h2>Summary</h2>
+                    <p class="justify"><span class="nobreak">Final-year</span> Master&#39;s student in Computer Science at ENSEEIHT, with a background in mathematics and optimization. Built HilbertLM end to end on a single desktop GPU: tokenizer, <span class="nobreak">pre-training</span> on 20B tokens, <span class="nobreak">fine-tuning</span>, live chatbot. Looking to build, deploy and <span class="nobreak">fine-tune</span> LLM and agentic systems in production.</p>
+                </section>
+                <section>
+                    <h2>Experience</h2>
+                    <div class="c-entries">
+                        <div class="c-entry">
+                            <div class="row"><strong>Research Engineer Intern — Optimal Control &amp; Scientific Computing</strong><span>Jun 2025 – Aug 2025</span></div>
+                            <div class="row italic"><span class="subtitle">IRIT / ENSEEIHT · Julia, JuMP</span><span>Toulouse, France</span></div>
+                            <ul>
+                                <li>Built an automated benchmark looping over 15 control problems: convergence checks for both the solver and JuMP (reference Julia modeling language), initialization comparison, and relative error in the L² norm on the state x and control u between the two solvers.</li>
+                                <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer reviews), positive team feedback for surfacing critical bugs.</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            </section>
-            <section>
-                <h2>Education</h2>
-                <div class="p-entries">
-                    <div class="p-entry">
-                        <div class="row"><strong>ENSEEIHT (INP Toulouse)</strong><span>Sep 2023 – Present</span></div>
-                        <div class="row italic"><span class="subtitle">Computer Science &amp; Engineering</span><span>Toulouse, France</span></div>
-                        <p>Coursework: ML algorithms, numerical methods, optimization, HPC, big data systems.</p>
+                </section>
+                <section>
+                    <h2>Education</h2>
+                    <div class="c-entries">
+                        <div class="c-entry">
+                            <div class="row"><strong>ENSEEIHT (INP Toulouse)</strong><span>Sep 2023 – Sep 2027 (expected)</span></div>
+                            <div class="row italic"><span class="subtitle">Diplôme d&#39;Ingénieur (MSc equivalent), Computer Science &amp; Engineering</span><span>Toulouse, France</span></div>
+                            <p>ML algorithms, numerical methods, optimization, HPC, big data systems. Includes a required <span class="nobreak">6-month</span> <span class="nobreak">end-of-studies</span> internship.</p>
+                        </div>
+                        <div class="c-entry">
+                            <div class="row"><strong>Lycée Chaptal</strong><span>Sep 2020 – Jul 2023</span></div>
+                            <div class="row italic"><span class="subtitle">Classes Préparatoires (CPGE), Mathematics &amp; Physics</span><span>Paris, France</span></div>
+                            <p>Intensive undergraduate program in mathematics and physics, preparing for the competitive entrance exams to French engineering schools.</p>
+                        </div>
                     </div>
-                    <div class="p-entry">
-                        <div class="row"><strong>Lycée Chaptal</strong><span>Sep 2020 – Jul 2023</span></div>
-                        <div class="row italic"><span class="subtitle">Preparatory School, Maths &amp; Physics</span><span>Paris, France</span></div>
-                        <p>Coursework: Linear algebra, real analysis, probability theory, differential equations.</p>
+                </section>
+                <section>
+                    <h2>Projects</h2>
+                    <div class="c-entries">
+                        <div class="c-entry">
+                            <div class="row"><strong>HilbertLM (135M &amp; 163M)</strong></div>
+                            <div><a href="https://baillietn.github.io/HilbertLM-Lab/">baillietn.github.io/<span class="nobreak">HilbertLM-Lab</span></a> | <a href="https://huggingface.co/collections/baillietn/hilbertlm">huggingface.co/collections/baillietn/hilbertlm</a></div>
+                            <div class="italic">Python, PyTorch, Transformer Engine, Flash Attention 3, FP8, HuggingFace, BPE</div>
+                            <div><span class="nobreak">135M &amp; 163M params</span> | <span class="nobreak">20B tokens trained</span> | <span class="nobreak">~70h · RTX 5080</span> | <span class="nobreak">79K tok/s throughput</span> | <span class="nobreak">4 models on HF Hub</span></div>
+                            <ul>
+                                <li>Two <span class="nobreak">decoder-only</span> transformers built entirely from scratch. <span class="nobreak">30-layer</span> architecture: GQA (9Q/3KV heads), RoPE, SwiGLU; custom BPE tokenizer (49K vocab).</li>
+                                <li><span class="nobreak">4-stage</span> curriculum <span class="nobreak">pre-training</span> (<span class="nobreak">FineWeb-Edu</span>, <span class="nobreak">Python-Edu</span>, FineMath, <span class="nobreak">Cosmopedia-v2</span>) + SFT on 100M conversational tokens (SmolTalk).</li>
+                                <li>Deployed as Base &amp; Chat variants (BF16 + FP8) on HuggingFace Hub with a streaming chatbot interface.</li>
+                            </ul>
+                        </div>
+                        <div class="c-entry">
+                            <div class="row"><strong>Soprasteria–ENSEEIHT · Water Quality IBD Prediction</strong></div>
+                            <div class="italic">Python, TensorFlow/Keras, <span class="nobreak">scikit-learn</span>, pandas</div>
+                            <p class="justify">Neural network predicting Biological Diatom Index for river ecosystem monitoring. 70+ environmental features from Naïades DB (2000–2025); BatchNorm &amp; Dropout; anomaly detection &amp; feature importance analysis.</p>
+                        </div>
                     </div>
-                </div>
-            </section>
-            <section>
-                <h2>Projects</h2>
-                <div class="p-entries">
-                    <div class="p-entry">
-                        <div class="row"><strong>HilbertLM (135M &amp; 163M)</strong><span><a href="https://baillietn.github.io/HilbertLM-Lab/">Live demo</a> | <a href="https://huggingface.co/collections/baillietn/hilbertlm">HuggingFace</a></span></div>
-                        <div class="italic">Python, PyTorch, Transformer Engine, Flash Attention 3, FP8, HuggingFace, BPE</div>
-                        <div>135M &amp; 163M params | 20B tokens trained | ~70h · RTX 5080 | 79K tok/s throughput | 4 models on HF Hub</div>
-                        <ul>
-                            <li>Two <span class="nobreak">decoder-only</span> transformers built entirely from scratch. <span class="nobreak">30-layer</span> architecture: GQA (9Q/3KV heads), RoPE, SwiGLU; custom BPE tokenizer (49K vocab).</li>
-                            <li><span class="nobreak">4-stage</span> curriculum <span class="nobreak">pre-training</span> (<span class="nobreak">FineWeb-Edu</span>, <span class="nobreak">Python-Edu</span>, FineMath, <span class="nobreak">Cosmopedia-v2</span>) + SFT on 100M conversational tokens (SmolTalk).</li>
-                            <li>Loss landscape visualization via PCA on checkpoints.</li>
-                            <li>Deployed as Base &amp; Chat variants (BF16 + FP8) on HuggingFace Hub with a streaming chatbot interface.</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <section>
-                <h2>Skills</h2>
-                <div class="skills">
-                    <p><strong>Machine Learning &amp; LLMs:</strong> LLM architecture (GQA · RoPE · SwiGLU), <span class="nobreak">Pre-training</span> pipeline (data · curriculum · BPE), <span class="nobreak">Fine-tuning</span> (SFT), <span class="nobreak">Mixed-precision</span> training (BF16/FP8), Inference &amp; deployment (HF)</p>
-                    <p><strong>Frameworks &amp; Tools:</strong> Python, PyTorch, HuggingFace, Transformer Engine, Flash Attention, FP8 / BF16, JAX/Flax, NumPy, <span class="nobreak">scikit-learn</span>, Julia, SQL, Git, Linux, HPC</p>
-                    <p><strong>Languages:</strong> French (native), English (professional)</p>
-                </div>
-            </section>
+                <section>
+                    <h2>Skills</h2>
+                    <div class="skills">
+                        <p><strong>Machine Learning &amp; LLMs:</strong> LLM architecture (GQA · RoPE · SwiGLU), <span class="nobreak">Pre-training</span> pipeline (data · curriculum · BPE), <span class="nobreak">Fine-tuning</span> (SFT), <span class="nobreak">Mixed-precision</span> training (BF16/FP8), Inference &amp; deployment (HF)</p>
+                        <p><strong>Frameworks &amp; Tools:</strong> Python, PyTorch, HuggingFace, Transformer Engine, Flash Attention, FP8 / BF16, JAX/Flax, NumPy, <span class="nobreak">scikit-learn</span>, Julia, SQL, Git, Linux, HPC</p>
+                        <p><strong>Languages:</strong> French (native), English (professional)</p>
+                    </div>
+                </section>
+            </div>
+
         </div>
+    </div>
+    <div class="classic-frame" data-paper="letter">
+        <div class="classic-sheet">
+            <div class="classic-cv">
+                <header class="classic-header">
+                    <h1>Nicolas Bailliet</h1>
+                    <p>+33 6 51 75 16 99 | <a href="mailto:nicolas.bailliet@etu.toulouse-inp.fr">nicolas.bailliet@etu.<span class="nobreak">toulouse-inp</span>.fr</a> | Paris, France</p>
+                    <p><a href="https://baillietn.github.io">baillietn.github.io</a> | <a href="https://github.com/baillietn">github.com/baillietn</a> | <a href="https://linkedin.com/in/nbailliet">linkedin.com/in/nbailliet</a> | <a href="https://huggingface.co/baillietn">huggingface.co/baillietn</a></p>
+                    <p class="seeking">Seeking a <span class="nobreak">6-month</span> <span class="nobreak">end-of-studies</span> internship from <span class="nobreak">mid-March</span> 2027 · Open to relocation</p>
+                </header>
 
+                <section>
+                    <h2>Summary</h2>
+                    <p class="justify"><span class="nobreak">Final-year</span> Master&#39;s student in Computer Science at ENSEEIHT, with a background in mathematics and optimization. Built HilbertLM end to end on a single desktop GPU: tokenizer, <span class="nobreak">pre-training</span> on 20B tokens, <span class="nobreak">fine-tuning</span>, live chatbot. Looking to build, deploy and <span class="nobreak">fine-tune</span> LLM and agentic systems in production.</p>
+                </section>
+                <section>
+                    <h2>Experience</h2>
+                    <div class="c-entries">
+                        <div class="c-entry">
+                            <div class="row"><strong>Research Engineer Intern — Optimal Control &amp; Scientific Computing</strong><span>Jun 2025 – Aug 2025</span></div>
+                            <div class="row italic"><span class="subtitle">IRIT / ENSEEIHT · Julia, JuMP</span><span>Toulouse, France</span></div>
+                            <ul>
+                                <li>Built an automated benchmark looping over 15 control problems: convergence checks for both the solver and JuMP (reference Julia modeling language), initialization comparison, and relative error in the L² norm on the state x and control u between the two solvers.</li>
+                                <li>Contributed unit tests &amp; API documentation via GitHub (commits, Pull Requests, peer reviews), positive team feedback for surfacing critical bugs.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h2>Education</h2>
+                    <div class="c-entries">
+                        <div class="c-entry">
+                            <div class="row"><strong>ENSEEIHT (INP Toulouse)</strong><span>Sep 2023 – Sep 2027 (expected)</span></div>
+                            <div class="row italic"><span class="subtitle">Diplôme d&#39;Ingénieur (MSc equivalent), Computer Science &amp; Engineering</span><span>Toulouse, France</span></div>
+                            <p>ML algorithms, numerical methods, optimization, HPC, big data systems. Includes a required <span class="nobreak">6-month</span> <span class="nobreak">end-of-studies</span> internship.</p>
+                        </div>
+                        <div class="c-entry">
+                            <div class="row"><strong>Lycée Chaptal</strong><span>Sep 2020 – Jul 2023</span></div>
+                            <div class="row italic"><span class="subtitle">Classes Préparatoires (CPGE), Mathematics &amp; Physics</span><span>Paris, France</span></div>
+                            <p>Intensive undergraduate program in mathematics and physics, preparing for the competitive entrance exams to French engineering schools.</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h2>Projects</h2>
+                    <div class="c-entries">
+                        <div class="c-entry">
+                            <div class="row"><strong>HilbertLM (135M &amp; 163M)</strong></div>
+                            <div><a href="https://baillietn.github.io/HilbertLM-Lab/">baillietn.github.io/<span class="nobreak">HilbertLM-Lab</span></a> | <a href="https://huggingface.co/collections/baillietn/hilbertlm">huggingface.co/collections/baillietn/hilbertlm</a></div>
+                            <div class="italic">Python, PyTorch, Transformer Engine, Flash Attention 3, FP8, HuggingFace, BPE</div>
+                            <div><span class="nobreak">135M &amp; 163M params</span> | <span class="nobreak">20B tokens trained</span> | <span class="nobreak">~70h · RTX 5080</span> | <span class="nobreak">79K tok/s throughput</span> | <span class="nobreak">4 models on HF Hub</span></div>
+                            <ul>
+                                <li>Two <span class="nobreak">decoder-only</span> transformers built entirely from scratch. <span class="nobreak">30-layer</span> architecture: GQA (9Q/3KV heads), RoPE, SwiGLU; custom BPE tokenizer (49K vocab).</li>
+                                <li><span class="nobreak">4-stage</span> curriculum <span class="nobreak">pre-training</span> (<span class="nobreak">FineWeb-Edu</span>, <span class="nobreak">Python-Edu</span>, FineMath, <span class="nobreak">Cosmopedia-v2</span>) + SFT on 100M conversational tokens (SmolTalk).</li>
+                                <li>Deployed as Base &amp; Chat variants (BF16 + FP8) on HuggingFace Hub with a streaming chatbot interface.</li>
+                            </ul>
+                        </div>
+                        <div class="c-entry">
+                            <div class="row"><strong>Soprasteria–ENSEEIHT · Water Quality IBD Prediction</strong></div>
+                            <div class="italic">Python, TensorFlow/Keras, <span class="nobreak">scikit-learn</span>, pandas</div>
+                            <p class="justify">Neural network predicting Biological Diatom Index for river ecosystem monitoring. 70+ environmental features from Naïades DB (2000–2025); BatchNorm &amp; Dropout; anomaly detection &amp; feature importance analysis.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Skills</h2>
+                    <div class="skills">
+                        <p><strong>Machine Learning &amp; LLMs:</strong> LLM architecture (GQA · RoPE · SwiGLU), <span class="nobreak">Pre-training</span> pipeline (data · curriculum · BPE), <span class="nobreak">Fine-tuning</span> (SFT), <span class="nobreak">Mixed-precision</span> training (BF16/FP8), Inference &amp; deployment (HF)</p>
+                        <p><strong>Frameworks &amp; Tools:</strong> Python, PyTorch, HuggingFace, Transformer Engine, Flash Attention, FP8 / BF16, JAX/Flax, NumPy, <span class="nobreak">scikit-learn</span>, Julia, SQL, Git, Linux, HPC</p>
+                        <p><strong>Languages:</strong> French (native), English (professional)</p>
+                    </div>
+                </section>
+            </div>
+
+        </div>
     </div>
 
     <script>
@@ -509,21 +595,53 @@
             localStorage.setItem('theme', next);
         }
 
-        // Two versions of the CV: the designed one and the plain US Letter one.
-        const PDF_FILES = { design: 'cv-nicolas-bailliet.pdf', letter: 'cv-nicolas-bailliet-us-letter.pdf' };
+        // The CV in two styles: Design (A4) and Classic (A4 or US Letter). The URL holds the
+        // state, so a link can open one version directly: cv/?style=classic&paper=letter
+        const PDF_FILES = {"classic-a4": "cv-nicolas-bailliet-classic-a4.pdf", "classic-letter": "cv-nicolas-bailliet-classic-letter.pdf", "design-a4": "cv-nicolas-bailliet.pdf"};
+        const SHEETS = { a4: [794, 1123], letter: [816, 1056] };  // px, as in the PDFs
+        const state = { style: 'design', paper: 'a4' };
 
-        function setView(view) {
-            root.setAttribute('data-view', view);
-            document.querySelectorAll('.view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
-            history.replaceState(null, '', view === 'letter' ? '#us-letter' : location.pathname + location.search);
+        function readState() {
+            const query = new URLSearchParams(location.search);
+            state.style = query.get('style') === 'classic' ? 'classic' : 'design';
+            state.paper = query.get('paper') === 'letter' ? 'letter' : 'a4';
+            if (location.hash === '#us-letter') { state.style = 'classic'; state.paper = 'letter'; }  // older links
         }
 
-        setView(location.hash === '#us-letter' ? 'letter' : 'design');
+        function render() {
+            root.setAttribute('data-style', state.style);
+            root.setAttribute('data-paper', state.paper);
+            document.querySelectorAll('[data-style].view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.style === state.style));
+            document.querySelectorAll('[data-paper].view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.paper === state.paper));
+            const url = state.style === 'classic' ? `?style=classic&paper=${state.paper}` : location.pathname;
+            history.replaceState(null, '', url);
+            fitSheets();
+        }
+
+        function setStyle(style) { state.style = style; render(); }
+        function setPaper(paper) { state.paper = paper; render(); }
+
+        // Scale each Classic sheet down to the available width, keeping the paper's proportions.
+        function fitSheets() {
+            const body = getComputedStyle(document.body);
+            const available = document.documentElement.clientWidth - parseFloat(body.paddingLeft) - parseFloat(body.paddingRight);
+            document.querySelectorAll('.classic-frame').forEach(frame => {
+                const [width, height] = SHEETS[frame.dataset.paper];
+                const scale = Math.min(1, available / width);
+                frame.style.width = `${width * scale}px`;
+                frame.style.height = `${height * scale}px`;
+                frame.firstElementChild.style.transform = scale < 1 ? `scale(${scale})` : '';
+            });
+        }
+
+        window.addEventListener('resize', fitSheets);
+        readState();
+        render();
 
         function downloadPDF() {
             const btn = document.querySelector('.download-btn');
             const orig = btn.textContent;
-            const file = PDF_FILES[root.getAttribute('data-view')];
+            const file = PDF_FILES[state.style === 'design' ? 'design-a4' : `classic-${state.paper}`];
             btn.disabled = true;
             btn.textContent = '⏳ Downloading...';
             fetch(file)

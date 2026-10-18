@@ -1,9 +1,9 @@
-/* Plain single-column CV, LaTeX style: the US Letter version, the local ATS version and
-   the US Letter preview on the CV page. Values from the CVLetter mockup.
-   ATS rules: one text flow in reading order, no images, tables or absolute positioning;
-   no text-transform and no letter-spacing (both change the text a parser extracts);
-   text bullets, so that extracted text still shows where each item starts.
-   Everything is scoped to .plain-cv so the same rules style the preview on the CV page. */
+/* Classic CV: sober single column, LaTeX style, in A4 and US Letter, and its preview on the
+   CV page. Values from the CVLetter mockup.
+   It must stay readable by applicant tracking systems: one text flow in reading order, no
+   images, tables or absolute positioning; no text-transform and no letter-spacing (both
+   change the text a parser extracts); text bullets, so that extracted text still shows
+   where each item starts. Everything is scoped to .classic-cv. */
 
 @font-face {
     font-family: 'CMU Serif';
@@ -33,14 +33,14 @@
     font-style: italic;
 }
 
-.plain-cv,
-.plain-cv * {
+.classic-cv,
+.classic-cv * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-.plain-cv {
+.classic-cv {
     font-family: 'CMU Serif', 'Latin Modern Roman', 'Computer Modern', Georgia, serif;
     font-size: 14px;
     line-height: 1.28;
@@ -52,11 +52,11 @@
     gap: 10px;
 }
 
-.plain-cv a {
+.classic-cv a {
     color: inherit;
 }
 
-.plain-cv .plain-header {
+.classic-cv .classic-header {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -64,29 +64,29 @@
     text-align: center;
 }
 
-.plain-cv h1 {
+.classic-cv h1 {
     margin-bottom: 3px;
     font-size: 34px;
     font-weight: 400;
     line-height: 1.1;
 }
 
-.plain-cv .plain-header p {
+.classic-cv .classic-header p {
     font-size: 13px;
 }
 
-.plain-cv .plain-header .seeking {
+.classic-cv .classic-header .seeking {
     margin-top: 3px;
     font-style: italic;
 }
 
-.plain-cv section {
+.classic-cv section {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.plain-cv h2 {
+.classic-cv h2 {
     padding-bottom: 1px;
     border-bottom: 1px solid currentColor;
     font-size: 16px;
@@ -94,17 +94,17 @@
     break-after: avoid;
 }
 
-.plain-cv .justify {
+.classic-cv .justify {
     text-align: justify;
 }
 
-.plain-cv .p-entries {
+.classic-cv .c-entries {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.plain-cv .p-entry {
+.classic-cv .c-entry {
     display: flex;
     flex-direction: column;
     gap: 1px;
@@ -112,21 +112,21 @@
 }
 
 /* Title on the left, dates (or links) on the right; same for the italic line below. */
-.plain-cv .row {
+.classic-cv .row {
     display: flex;
     justify-content: space-between;
     gap: 16px;
 }
 
-.plain-cv .row > span {
+.classic-cv .row > span {
     flex: none;
 }
 
-.plain-cv .italic {
+.classic-cv .italic {
     font-style: italic;
 }
 
-.plain-cv ul {
+.classic-cv ul {
     margin-top: 3px;
     padding-left: 18px;
     display: flex;
@@ -136,7 +136,7 @@
     list-style-type: "•  ";
 }
 
-.plain-cv .skills {
+.classic-cv .skills {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -144,6 +144,6 @@
 
 /* Set by the generator around hyphenated words, so they never break across lines:
    text extractors glue them back without the hyphen. */
-.plain-cv .nobreak {
+.classic-cv .nobreak {
     white-space: nowrap;
 }

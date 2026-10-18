@@ -2,19 +2,22 @@
 """Generate every version of the CV from _cv/cv.yml. Run it through ./generate-cv.sh
 
 Published (commit them):
-  cv/index.html                           the CV page: designed CV, with a preview of the US Letter one
-  cv/cv-nicolas-bailliet.pdf              designed CV, A4
-  cv/cv-nicolas-bailliet-us-letter.pdf    plain one-column CV, US Letter, one page
-  figures/og-cv.png                       the share image (loads its fonts from Google Fonts)
+  cv/index.html                               the CV page: the designed CV, and a preview of
+                                              the Classic one in A4 and US Letter
+  cv/cv-nicolas-bailliet.pdf                  designed CV, A4
+  cv/cv-nicolas-bailliet-classic-a4.pdf       Classic CV (sober, one column), A4
+  cv/cv-nicolas-bailliet-classic-letter.pdf   Classic CV, US Letter
+  figures/og-cv.png                           the share image (loads its fonts from Google Fonts)
 
-Local only (git-ignored):
-  _cv/local/cv-nicolas-bailliet-ats.pdf   plain one-column CV with all the content, A4
+Every PDF must fit on one page. After generating, the outputs are checked: the summary
+reads back word for word from each PDF, and words the site must not use are absent.
 
-In cv.yml, `hide_in: [letter]` on an entry, a bullet, a skill or a whole section leaves it
-out of a version; the versions are `design`, `letter` and `ats`.
+In cv.yml, `hide_in: [classic]` on an entry, a bullet, a skill, a section or an availability
+detail leaves it out of both Classic versions; a version name targets one version only.
 """
 import copy
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -25,10 +28,21 @@ from playwright.sync_api import sync_playwright
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-LOCAL = HERE / "local"  # git-ignored: the ATS version and intermediate files
+LOCAL = HERE / "local"  # git-ignored: intermediate files
 
-VERSIONS = ("design", "letter", "ats")
+VERSIONS = ("design-a4", "classic-a4", "classic-letter")
+GROUPS = {"design": ("design-a4",), "classic": ("classic-a4", "classic-letter")}
+PDFS = {
+    "design-a4": ROOT / "cv" / "cv-nicolas-bailliet.pdf",
+    "classic-a4": ROOT / "cv" / "cv-nicolas-bailliet-classic-a4.pdf",
+    "classic-letter": ROOT / "cv" / "cv-nicolas-bailliet-classic-letter.pdf",
+}
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+# Words the published site must not contain (the sober CV is called Classic, and the
+# internship search is no longer limited to other countries).
+FORBIDDEN = {"ATS": r"\bATS\b", "outside France": r"(?i)outside France", "abroad": r"(?i)\babroad\b",
+             "third-year": r"(?i)third-year"}
 
 # Screen-mode styles for the CV thumbnail of the share image.
 OG_THUMBNAIL_STYLES = """
@@ -45,7 +59,11 @@ OG_THUMBNAIL_STYLES = """
 # ── Content ──
 
 def select(cv, version):
-    """The content as one version sees it: list items whose `hide_in` names the version are dropped."""
+    """The content as one version sees it: list items whose `hide_in` names the version, or a
+    group it belongs to, are dropped."""
+    names = set(VERSIONS) | set(GROUPS)
+    hidden_for = {version} | {group for group, members in GROUPS.items() if version in members}
+
     def walk(node, where):
         if isinstance(node, dict):
             return {key: walk(value, f"{where}.{key}") for key, value in node.items() if key != "hide_in"}
@@ -53,14 +71,14 @@ def select(cv, version):
             kept = []
             for index, item in enumerate(node):
                 hidden = item.get("hide_in", []) if isinstance(item, dict) else []
-                unknown = set(hidden) - set(VERSIONS)
+                unknown = set(hidden) - names
                 if unknown:
                     sys.exit(f"cv.yml {where}[{index}]: hide_in names unknown version(s) {', '.join(sorted(unknown))}; "
-                             f"use {', '.join(VERSIONS)}")
-                if version in hidden:
+                             f"use {', '.join(sorted(names))}")
+                if hidden_for & set(hidden):
                     continue
                 item = walk(item, f"{where}[{index}]")
-                # A bullet written as {text, hide_in} is a plain string once hide_in is resolved.
+                # An item written as {text, hide_in} is a plain string once hide_in is resolved.
                 kept.append(item["text"] if isinstance(item, dict) and set(item) == {"text"} else item)
             return kept
         return node
@@ -93,23 +111,28 @@ def parse_date(value):
     return int(year), int(month) if month else None
 
 
-def design_dates(start, end):
-    """Date range on the designed CV: months within one year ('Jun–Aug 2025'), years otherwise ('2023–Present')."""
+def design_dates(start, end, expected=False):
+    """Date range on the designed CV: months within one year ('Jun–Aug 2025'), years otherwise
+    ('2023–Present', '2023–2027 (expected)')."""
     s, e = parse_date(start), parse_date(end)
     if e and s[0] == e[0] and s[1] and e[1]:
-        return f"{MONTHS[s[1] - 1]}–{MONTHS[e[1] - 1]} {s[0]}"
-    return f"{s[0]}–{e[0] if e else 'Present'}"
+        text = f"{MONTHS[s[1] - 1]}–{MONTHS[e[1] - 1]} {s[0]}"
+    else:
+        text = f"{s[0]}–{e[0] if e else 'Present'}"
+    return f"{text} (expected)" if expected else text
 
 
-def plain_dates(start, end):
-    """Date range on the plain CVs, one format everywhere: 'Jun 2025 – Aug 2025', 'Sep 2023 – Present'."""
+def classic_dates(start, end, expected=False):
+    """Date range on the Classic CV, one format everywhere: 'Jun 2025 – Aug 2025',
+    'Sep 2023 – Sep 2027 (expected)'."""
     def fmt(value):
         date = parse_date(value)
         if date is None:
             return "Present"
         return f"{MONTHS[date[1] - 1]} {date[0]}" if date[1] else str(date[0])
 
-    return f"{fmt(start)} – {fmt(end)}"
+    text = f"{fmt(start)} – {fmt(end)}"
+    return f"{text} (expected)" if expected else text
 
 
 def keep_hyphenated_words_whole(html):
@@ -150,8 +173,8 @@ DESIGN_OVERFLOW = """
 """
 
 
-def print_pdf(browser, html_path, pdf_path, max_pages=None, fixed_page=False, fonts=()):
-    """Print a page to PDF; paper size and margins come from the page's own CSS.
+def print_pdf(browser, html_path, pdf_path, fixed_page=False, fonts=()):
+    """Print a page to a one-page PDF; paper size and margins come from the page's own CSS.
 
     `fonts` lists CSS font shorthands that must be loaded, so that a font that failed
     to download (Google Fonts needs the network) stops the build instead of being replaced.
@@ -181,8 +204,8 @@ def print_pdf(browser, html_path, pdf_path, max_pages=None, fixed_page=False, fo
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         pdf_path.write_bytes(data)
     pages = page_count(data)
-    if max_pages and pages > max_pages:
-        sys.exit(f"\nError: {pdf_path.relative_to(ROOT)} is {pages} pages long, the limit is {max_pages}.\n"
+    if pages > 1:
+        sys.exit(f"\nError: {pdf_path.relative_to(ROOT)} is {pages} pages long, the limit is 1.\n"
                  f"Shorten the content, or hide something from this version with `hide_in` in _cv/cv.yml.")
     return pdf_path
 
@@ -211,38 +234,83 @@ def make_share_image(browser, env, cv_page, out):
     return out
 
 
+# ── Checks ──
+
+def pdf_text(pdf):
+    """Text of a PDF in content-stream order (`pdftotext -raw`), the strictest reading:
+    it only separates words that are really separated on the page."""
+    try:
+        text = subprocess.run(["pdftotext", "-raw", str(pdf), "-"], capture_output=True, text=True, check=True).stdout
+    except FileNotFoundError:
+        sys.exit("\nError: the checks need pdftotext (package poppler-utils).")
+    return re.sub(r"-\n", "-", text)  # a word broken after its hyphen at a line end is one word
+
+
+def published_files():
+    """Files GitHub Pages serves: tracked files outside `_` folders, plus the generated ones."""
+    tracked = subprocess.run(["git", "-C", str(ROOT), "ls-files"], capture_output=True, text=True, check=True).stdout
+    paths = {ROOT / p for p in tracked.split() if not p.startswith(("_", "."))}
+    paths |= set(PDFS.values()) | {ROOT / "cv" / "index.html"}
+    return sorted(p for p in paths if p.exists() and p.suffix in {".html", ".css", ".js", ".md", ".txt", ".pdf"})
+
+
+def check_outputs(cv):
+    failures = []
+    first = next(section for section in cv["sections"] if section.get("text"))
+    for version, pdf in PDFS.items():
+        summary = plain(first.get("classic_text", first["text"]) if version.startswith("classic") else first["text"])
+        words = set(pdf_text(pdf).split())
+        missing = [word for word in summary.split() if word not in words]
+        if missing:
+            failures.append(f"{pdf.relative_to(ROOT)}: summary words not found as such in the extracted text: "
+                            f"{', '.join(missing)}")
+    for path in published_files():
+        text = pdf_text(path) if path.suffix == ".pdf" else path.read_text(errors="replace")
+        found = [label for label, pattern in FORBIDDEN.items() if re.search(pattern, text)]
+        if found:
+            failures.append(f"{path.relative_to(ROOT)}: contains {', '.join(found)}")
+    if failures:
+        sys.exit("\nError: the outputs failed their checks:\n  " + "\n  ".join(failures))
+    print(f"  checks: summary readable from the {len(PDFS)} PDFs; "
+          f"{', '.join(FORBIDDEN)} absent from {len(published_files())} published files")
+
+
 def main():
     cv = yaml.safe_load((HERE / "cv.yml").read_text())
     env = Environment(loader=FileSystemLoader(HERE / "templates"), autoescape=True,
                       trim_blocks=True, lstrip_blocks=True, keep_trailing_newline=True)
     env.filters.update(inline=inline, plain=plain, bare_url=bare_url)
 
-    def plain_body(version):
+    def classic_body(version):
         return Markup(keep_hyphenated_words_whole(
-            env.get_template("plain_body.html.j2").render(cv=select(cv, version), dates=plain_dates)))
+            env.get_template("classic_body.html.j2").render(cv=select(cv, version), dates=classic_dates)))
 
-    def plain_page(version, paper):
-        return write(LOCAL / f"{version}.html", env.get_template("plain.html.j2").render(
-            cv=cv, paper=paper, body=plain_body(version), font_dir=(ROOT / "cv" / "fonts").as_uri()))
+    def classic_page(version, paper):
+        return write(LOCAL / f"{version}.html", env.get_template("classic.html.j2").render(
+            cv=cv, paper=paper, body=classic_body(version), font_dir=(ROOT / "cv" / "fonts").as_uri()))
 
-    # The CV page shows the designed CV and embeds the US Letter one as a preview.
+    # The CV page shows the designed CV and embeds both Classic versions as previews:
+    # each preview is exactly the HTML printed into its PDF.
     page = write(ROOT / "cv" / "index.html", env.get_template("design.html.j2").render(
-        cv=select(cv, "design"), dates=design_dates, letter_body=plain_body("letter"), font_dir="fonts"))
-    letter, ats = plain_page("letter", "Letter"), plain_page("ats", "A4")
+        cv=select(cv, "design-a4"), dates=design_dates, font_dir="fonts",
+        classic_a4=classic_body("classic-a4"), classic_letter=classic_body("classic-letter"),
+        pdfs={version: pdf.name for version, pdf in PDFS.items()}))
+    classic_a4, classic_letter = classic_page("classic-a4", "A4"), classic_page("classic-letter", "Letter")
 
     outputs = [page]
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        outputs.append(print_pdf(browser, page, ROOT / "cv" / "cv-nicolas-bailliet.pdf", max_pages=1, fixed_page=True,
+        outputs.append(print_pdf(browser, page, PDFS["design-a4"], fixed_page=True,
                                  fonts=("800 26px 'Schibsted Grotesk'", "500 10px 'IBM Plex Mono'")))
         cmu = ("400 14px 'CMU Serif'", "700 14px 'CMU Serif'", "italic 400 14px 'CMU Serif'")
-        outputs.append(print_pdf(browser, letter, ROOT / "cv" / "cv-nicolas-bailliet-us-letter.pdf", max_pages=1, fonts=cmu))
-        outputs.append(print_pdf(browser, ats, LOCAL / "cv-nicolas-bailliet-ats.pdf", fonts=cmu))
+        outputs.append(print_pdf(browser, classic_a4, PDFS["classic-a4"], fonts=cmu))
+        outputs.append(print_pdf(browser, classic_letter, PDFS["classic-letter"], fonts=cmu))
         outputs.append(make_share_image(browser, env, page, ROOT / "figures" / "og-cv.png"))
         browser.close()
 
     for path in outputs:
         print(f"  -> {path.relative_to(ROOT)}")
+    check_outputs(cv)
 
 
 if __name__ == "__main__":

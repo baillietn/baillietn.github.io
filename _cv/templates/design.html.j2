@@ -19,10 +19,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
     <style>
         {% filter indent(8) %}
-        {% include 'plain.css' %}
+        {% include 'classic.css' %}
         {% endfilter %}
     </style>
 </head>
@@ -45,9 +45,13 @@
             </svg>
         </a>
         <button class="download-btn" onclick="downloadPDF()">📥 Download PDF</button>
-        <div class="view-switch" role="group" aria-label="CV version">
-            <button class="view-option" data-view="design" onclick="setView('design')">Design</button>
-            <button class="view-option" data-view="letter" onclick="setView('letter')">US Letter</button>
+        <div class="view-switch style-switch" role="group" aria-label="CV style">
+            <button class="view-option" data-style="design" onclick="setStyle('design')">Design</button>
+            <button class="view-option" data-style="classic" onclick="setStyle('classic')">Classic</button>
+        </div>
+        <div class="view-switch paper-switch" role="group" aria-label="Paper size">
+            <button class="view-option" data-paper="a4" onclick="setPaper('a4')">A4</button>
+            <button class="view-option" data-paper="letter" onclick="setPaper('letter')">US Letter</button>
         </div>
     </div>
 
@@ -63,7 +67,7 @@
     {% elif name == 'linkedin' %}
     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg>
     {% elif name == 'hf' %}
-    <span aria-hidden="true" class="hf-badge">HF</span>
+    <span aria-hidden="true" class="hf-icon">🤗</span>
     {% else %}
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
     {% endif %}
@@ -133,7 +137,7 @@
                 <h1>{{ cv.identity.name }}</h1>
                 <p class="cv-role">{{ cv.identity.title }}</p>
                 <div class="cv-pills">
-                    <p class="cv-pill"><span aria-hidden="true" class="dot"></span>{{ cv.availability.seeking }} · {{ cv.availability.based_in }} · {{ cv.availability.mobility }}</p>
+                    <p class="cv-pill"><span aria-hidden="true" class="dot"></span>{{ ([cv.availability.seeking] + cv.availability.details) | join(' · ') }}</p>
                     <p class="cv-pill"><span aria-hidden="true" class="dot"></span>{{ cv.availability.focus }}</p>
                 </div>
             </header>
@@ -196,7 +200,7 @@
                         <div class="entry-head">
                             <strong>{{ entry_title(entry) }}</strong>
                             {% if entry.start %}
-                            <span class="entry-date">{{ dates(entry.start, entry.end) }}</span>
+                            <span class="entry-date">{{ dates(entry.start, entry.end, entry.expected) }}</span>
                             {% endif %}
                         </div>
                         {% if entry.organization %}
@@ -225,9 +229,17 @@
         </div>
     </div>
 
-    {# Preview of the US Letter version: the same HTML that is printed to its PDF. #}
-    <div class="letter-sheet">
-        {{ letter_body | indent(8) }}
+    {# The Classic CV, in A4 and in US Letter: each sheet holds exactly the HTML printed to its PDF.
+       The frame takes the sheet's size, scaled down to fit narrow screens. #}
+    <div class="classic-frame" data-paper="a4">
+        <div class="classic-sheet">
+            {{ classic_a4 | indent(12) }}
+        </div>
+    </div>
+    <div class="classic-frame" data-paper="letter">
+        <div class="classic-sheet">
+            {{ classic_letter | indent(12) }}
+        </div>
     </div>
 
     <script>
@@ -271,21 +283,53 @@
             localStorage.setItem('theme', next);
         }
 
-        // Two versions of the CV: the designed one and the plain US Letter one.
-        const PDF_FILES = { design: 'cv-nicolas-bailliet.pdf', letter: 'cv-nicolas-bailliet-us-letter.pdf' };
+        // The CV in two styles: Design (A4) and Classic (A4 or US Letter). The URL holds the
+        // state, so a link can open one version directly: cv/?style=classic&paper=letter
+        const PDF_FILES = {{ pdfs | tojson }};
+        const SHEETS = { a4: [794, 1123], letter: [816, 1056] };  // px, as in the PDFs
+        const state = { style: 'design', paper: 'a4' };
 
-        function setView(view) {
-            root.setAttribute('data-view', view);
-            document.querySelectorAll('.view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
-            history.replaceState(null, '', view === 'letter' ? '#us-letter' : location.pathname + location.search);
+        function readState() {
+            const query = new URLSearchParams(location.search);
+            state.style = query.get('style') === 'classic' ? 'classic' : 'design';
+            state.paper = query.get('paper') === 'letter' ? 'letter' : 'a4';
+            if (location.hash === '#us-letter') { state.style = 'classic'; state.paper = 'letter'; }  // older links
         }
 
-        setView(location.hash === '#us-letter' ? 'letter' : 'design');
+        function render() {
+            root.setAttribute('data-style', state.style);
+            root.setAttribute('data-paper', state.paper);
+            document.querySelectorAll('[data-style].view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.style === state.style));
+            document.querySelectorAll('[data-paper].view-option').forEach(b => b.setAttribute('aria-pressed', b.dataset.paper === state.paper));
+            const url = state.style === 'classic' ? `?style=classic&paper=${state.paper}` : location.pathname;
+            history.replaceState(null, '', url);
+            fitSheets();
+        }
+
+        function setStyle(style) { state.style = style; render(); }
+        function setPaper(paper) { state.paper = paper; render(); }
+
+        // Scale each Classic sheet down to the available width, keeping the paper's proportions.
+        function fitSheets() {
+            const body = getComputedStyle(document.body);
+            const available = document.documentElement.clientWidth - parseFloat(body.paddingLeft) - parseFloat(body.paddingRight);
+            document.querySelectorAll('.classic-frame').forEach(frame => {
+                const [width, height] = SHEETS[frame.dataset.paper];
+                const scale = Math.min(1, available / width);
+                frame.style.width = `${width * scale}px`;
+                frame.style.height = `${height * scale}px`;
+                frame.firstElementChild.style.transform = scale < 1 ? `scale(${scale})` : '';
+            });
+        }
+
+        window.addEventListener('resize', fitSheets);
+        readState();
+        render();
 
         function downloadPDF() {
             const btn = document.querySelector('.download-btn');
             const orig = btn.textContent;
-            const file = PDF_FILES[root.getAttribute('data-view')];
+            const file = PDF_FILES[state.style === 'design' ? 'design-a4' : `classic-${state.paper}`];
             btn.disabled = true;
             btn.textContent = '⏳ Downloading...';
             fetch(file)

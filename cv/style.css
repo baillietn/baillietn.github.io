@@ -1,5 +1,5 @@
 /* CV page: the designed A4 CV (values from the CVDesign mockup, teal palette),
-   the buttons around it, and the sheet that previews the US Letter CV. */
+   the buttons around it, and the sheets that show the Classic CV in A4 and US Letter. */
 
 :root {
     --cv-bg: #f0f0f0;
@@ -75,6 +75,10 @@ body {
     grid-template-columns: 175px minmax(0, 1fr);
     overflow: hidden;
     line-height: 1.4;
+    /* Unrounded glyph advances. Headless Chromium otherwise rounds web-font advances to whole
+       pixels, which shrinks the gaps written into the PDF: text extractors then glue words
+       ("asingledesktop") and split letter-spaced titles ("P R O F I L E"). */
+    text-rendering: geometricPrecision;
 }
 
 /* The mockup's sizes are content sizes (default box model). */
@@ -181,17 +185,16 @@ body {
     text-decoration: none;
 }
 
-.hf-badge {
+/* Hugging Face: its emoji, in the same 12px box as the other contact icons. */
+.hf-icon {
     flex: none;
     width: 12px;
-    margin-top: 1px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 8px;
-    font-weight: 500;
+    height: 12px;
+    margin-top: 2px;
+    font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+    font-size: 11px;
     line-height: 12px;
     text-align: center;
-    border: 1px solid currentColor;
-    border-radius: 2px;
 }
 
 .skill-group {
@@ -472,6 +475,11 @@ body {
     font-size: 9px;
 }
 
+/* Monospace chips extract fine with rounded advances, and keep the mockup's single row with them. */
+.metrics {
+    text-rendering: auto;
+}
+
 .metrics span {
     padding: 1px 6px;
     border-radius: 3px;
@@ -607,25 +615,45 @@ body {
     color: white;
 }
 
-/* US Letter preview: a sheet of 8.5 x 11 in with the PDF's page margins */
-.letter-sheet {
+/* The paper switch only makes sense for the Classic CV. */
+:root:not([data-style="classic"]) .paper-switch {
     display: none;
-    width: 8.5in;
-    max-width: 100%;
-    min-height: 11in;
-    margin: 0 auto;
-    padding: 44px 54px 40px;
-    background: var(--cv-card-bg);
-    color: var(--cv-ink);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
 }
 
-:root[data-view="letter"] .letter-sheet {
+/* Classic CV: a sheet with the PDF's size and page margins, in the colours of the page theme.
+   The frame takes the (scaled) size of the sheet; see fitSheets() in the page script. */
+.classic-frame {
+    display: none;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+:root[data-style="classic"][data-paper="a4"] .classic-frame[data-paper="a4"],
+:root[data-style="classic"][data-paper="letter"] .classic-frame[data-paper="letter"] {
     display: block;
 }
 
-:root[data-view="letter"] .cv-container {
+:root[data-style="classic"] .cv-container {
     display: none;
+}
+
+.classic-sheet {
+    padding: 44px 54px 40px;
+    overflow: hidden;
+    background: var(--cv-card-bg);
+    color: var(--cv-ink);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+    transform-origin: top left;
+}
+
+.classic-frame[data-paper="a4"] .classic-sheet {
+    width: 794px;
+    height: 1123px;
+}
+
+.classic-frame[data-paper="letter"] .classic-sheet {
+    width: 816px;
+    height: 1056px;
 }
 
 @media screen and (max-width: 820px) {
@@ -657,13 +685,6 @@ body {
     .btn-container-right {
         margin: 0.5rem 0 0.7rem;
         max-width: none;
-    }
-
-    .letter-sheet {
-        width: 100%;
-        min-height: 0;
-        padding: 1rem;
-        border-radius: 12px;
     }
 
     /* Let the project title and link URLs wrap instead of forcing
@@ -721,7 +742,7 @@ body {
 
     .btn-container,
     .btn-container-right,
-    .letter-sheet {
+    .classic-frame {
         display: none !important;
     }
 
